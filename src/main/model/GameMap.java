@@ -36,6 +36,17 @@ public class GameMap {
         return this.tiles[x][y];
     }
 
+    // REQUIRES: this.shape[0] > x + w, this.shape[1] > y + h
+    // MODIFIES: this.tiles[x][y]
+    // EFFECTS: Set a single tile to a new tile
+    void chiselRectangle(int x, int y, int w, int h) throws Exception {
+        for (int i = x; i < w+x; i++) {
+            for (int j = y; j < h+y; j++) {
+                this.tiles[i][j] = new Tile(TileKind.FLOOR);
+            }
+        }
+    }
+
     // REQUIRES: x < this.shape[0], y < this.shape[1]
     // MODIFIES: this.tiles[x][y]
     // EFFECTS: Set a single tile to a new tile

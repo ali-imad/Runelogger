@@ -2,7 +2,7 @@ package model;
 
 public class Tile {
     private final char glyph;
-    private final boolean walkable;
+    private boolean walkable;
 
     public Tile(TileKind kind) throws Exception {
         this.walkable = false;
@@ -12,6 +12,7 @@ public class Tile {
                 break;
             case FLOOR:
                 this.glyph = '.';
+                this.walkable = true;
                 break;
             default:
                 throw new Exception("Tile not from TileKind enum");

@@ -1,7 +1,12 @@
 package model;
 
+import model.tile.Floor;
+import model.tile.Tile;
+import model.tile.TileKind;
+import model.tile.Wall;
+
 import static java.lang.Math.*;  // we do a lot of math stuff here
-import static model.TileKind.*;  // just to make it less verbose
+import static model.tile.TileKind.*;  // just to make it less verbose
 
 public class GameMap {
     private final Tile[][] tiles;
@@ -14,11 +19,7 @@ public class GameMap {
         this.tiles = new Tile[mapWidth][mapHeight];
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
-                try {
-                    this.tiles[i][j] = new Tile(WALL);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                setTile(i, j, WALL);
             }
         }
         this.shape = new int[]{mapWidth, mapHeight};
@@ -42,7 +43,7 @@ public class GameMap {
     // REQUIRES: this.shape[0] > x + w, this.shape[1] > y + h
     // MODIFIES: this.tiles[x][y]
     // EFFECTS: Set a rectangle into floor tiles
-    void chiselRectangle(int x, int y, int w, int h) throws Exception {
+    void chiselRectangle(int x, int y, int w, int h) {
         for (int i = x; i < w+x; i++) {
             for (int j = y; j < h+y; j++) {
                 this.setTile(i,j, FLOOR);
@@ -50,7 +51,7 @@ public class GameMap {
         }
     }
 
-    void chiselCircle(int x, int y, int r) throws Exception {
+    void chiselCircle(int x, int y, int r) {
         // based off equation of a circle:
         // r^2 = (x-a)^2 + (y-b)^2
 
@@ -77,7 +78,16 @@ public class GameMap {
     // REQUIRES: x < this.shape[0], y < this.shape[1]
     // MODIFIES: this.tiles[x][y]
     // EFFECTS: Set a single tile to a new tile. Pretty wrapper
-    public void setTile(int x, int y, TileKind kind) throws Exception {
-        this.tiles[x][y] = new Tile(kind);
+    public void setTile(int x, int y, TileKind kind) {
+        switch (kind) {
+            case FLOOR:
+                this.tiles[x][y] = new Floor();
+                break;
+            case WALL:
+                this.tiles[x][y] = new Wall();
+                break;
+            default:
+                throw new IllegalArgumentException(kind.name() + " is not a TileKind!");
+        }
     }
 }

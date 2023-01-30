@@ -29,6 +29,14 @@ public class Actor {
         this.pos = newPos;
     }
 
+    public void setX(int x) {
+        this.pos[0] = x;
+    }
+
+    public void setY(int y) {
+        this.pos[1] = y;
+    }
+
     public char getGlyph() {
         return glyph;
     }

@@ -4,7 +4,7 @@ public class Game {
     static final int MAP_WIDTH = 80;
     static final int MAP_HEIGHT = 50;
     private final String title;
-    Actor player;
+    Actor player;  // TODO: convert to Singleton Player class
     World world;
 
     public Game(String name) {

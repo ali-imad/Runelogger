@@ -18,16 +18,11 @@ import static com.googlecode.lanterna.TextColor.*;
 public class GameWindow {
     private static Game game;
     private final Screen screen;
-    private static boolean gameIsRunning;
     private TerminalSize size;
 
     public GameWindow(int width, int height, Game unattached) throws IOException {
         game = unattached;
         this.screen = new DefaultTerminalFactory().createScreen();
-    }
-
-    public static void killGame() {
-        gameIsRunning = false;
     }
 
     public void run() throws IOException {
@@ -37,9 +32,7 @@ public class GameWindow {
         // hide the cursor
         this.screen.setCursorPosition(null);
 
-        gameIsRunning = true;
-
-        while (gameIsRunning) {
+        while (Game.isGameIsRunning()) {
             // show new game state
             this.render();
             // get player input
@@ -93,21 +86,10 @@ public class GameWindow {
         if (key == null) {
             return;
         }
-        switch (key.getCharacter()) {
-            case ('h'):
-                game.getWorld().moveActorAndCollide(game.getPlayer(), -1, 0);
-                break;
-            case ('j'):
-                game.getWorld().moveActorAndCollide(game.getPlayer(), 0, 1);
-                break;
-            case ('k'):
-                game.getWorld().moveActorAndCollide(game.getPlayer(), 0, -1);
-                break;
-            case ('l'):
-                game.getWorld().moveActorAndCollide(game.getPlayer(), 1, 0);
-                break;
-            default:
-                break;
+        if (key.getCharacter() != null) {
+            game.processInput(key.getCharacter());
+        } else if (key.getKeyType() != null) {
+            game.processInput(key.getKeyType());
         }
     }
 }

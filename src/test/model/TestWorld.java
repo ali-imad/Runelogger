@@ -12,11 +12,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TestWorld {
     private World testWorld;
+    static final int testWidth = 40;
+    static final int testHeight = 30;
 
     @BeforeEach
     void runBefore() {
         Actor testActor = new Actor('@', "test actor", 0, 0);
-        testWorld = new World(testActor);
+        testWorld = new World(testActor, testWidth, testHeight);
     }
 
     @Test
@@ -33,8 +35,6 @@ class TestWorld {
             Stream<Tile> row = Arrays.stream(testWorld.getMap().getTiles()[i]);
             row.forEach(tile -> assertEquals('#', tile.getGlyph()));
         }
-
-        // rectangle map
     }
 
 }

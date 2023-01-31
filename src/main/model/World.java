@@ -1,14 +1,17 @@
 package model;
 
+import model.tile.Tile;
+
 import java.util.ArrayList;
 
 public class World {
     private GameMap map;  // presently active tiles
-    private ArrayList<Actor> actors;  // list of actors
+    private final ArrayList<Actor> actors;  // list of actors
 
-    public World(Actor player) {
+    public World(Actor player, int w, int h) {
         this.actors = new ArrayList<>();
         this.actors.add(player);
+        this.resetMap(w, h);
     }
 
     // REQUIRES:
@@ -23,13 +26,27 @@ public class World {
     }
 
     // REQUIRES: actor is in actors
-    public void moveActorInMap(Actor actor, int dx, int dy) {
-        int[] newPos = actor.getPos();
+    public void moveActorAndCollide(Actor actor, int dx, int dy) {
+        int[] newPos = actor.getPos().clone();
         newPos[0] += dx;
         newPos[1] += dy;
 
-        if (this.map.getTiles()[newPos[0]][newPos[1]].isWalkable()) {
+        Tile tileToReach = this.map.getTile(newPos[0], newPos[1]);
+
+        if (tileToReach.isWalkable()) {
             actor.setPos(newPos);
+        } else {
+            System.out.println("BLOCKED");
         }
+    }
+
+    public void setBasicMap() {
+        int hollowW = getMap().getShape()[0] - 2;
+        int hollowH = getMap().getShape()[1] - 2;
+        this.getMap().chiselRectangle(1,1, hollowW, hollowH);
+    }
+
+    public Actor[] getActors() {
+        return this.actors.toArray(new Actor[this.actors.size()]);
     }
 }

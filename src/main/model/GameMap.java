@@ -74,7 +74,6 @@ public class GameMap {
 
     }
 
-
     // REQUIRES: x < this.shape[0], y < this.shape[1]
     // MODIFIES: this.tiles[x][y]
     // EFFECTS: Set a single tile to a new tile. Pretty wrapper

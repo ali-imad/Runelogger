@@ -6,23 +6,33 @@ import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
+import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import model.Actor;
 import model.Game;
 import model.GameMap;
 import model.tile.Tile;
 
+import java.awt.*;
 import java.io.IOException;
 
 import static com.googlecode.lanterna.TextColor.*;
+import static com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration.BoldMode.NOTHING;
 
 public class GameWindow {
     private static Game game;
     private final Screen screen;
+    private static SwingTerminalFontConfiguration tc;
     private TerminalSize size;
 
     public GameWindow(int width, int height, Game unattached) throws IOException {
         game = unattached;
-        this.screen = new DefaultTerminalFactory().createScreen();
+        tc = new SwingTerminalFontConfiguration(false, NOTHING,
+                new Font(Font.MONOSPACED, Font.PLAIN, 14));
+        this.size = new TerminalSize(width, height);
+        this.screen = new DefaultTerminalFactory()
+                .setInitialTerminalSize(this.size)
+                .setTerminalEmulatorFontConfiguration(tc)
+                .createScreen();
     }
 
     public void run() throws IOException {

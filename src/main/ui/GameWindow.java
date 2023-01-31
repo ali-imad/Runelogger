@@ -7,22 +7,22 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
-import model.Actor;
 import model.Game;
 import model.GameMap;
+import model.actor.Actor;
 import model.tile.Tile;
 
 import java.awt.*;
 import java.io.IOException;
 
-import static com.googlecode.lanterna.TextColor.*;
+import static com.googlecode.lanterna.TextColor.ANSI;
 import static com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration.BoldMode.NOTHING;
 
 public class GameWindow {
     private static Game game;
-    private final Screen screen;
     private static SwingTerminalFontConfiguration tc;
-    private TerminalSize size;
+    private final Screen screen;
+    private final TerminalSize size;
 
     public GameWindow(int width, int height, Game unattached) throws IOException {
         game = unattached;
@@ -31,6 +31,7 @@ public class GameWindow {
         this.size = new TerminalSize(width, height);
         this.screen = new DefaultTerminalFactory()
                 .setInitialTerminalSize(this.size)
+                .setTerminalEmulatorTitle(game.getTitle())
                 .setTerminalEmulatorFontConfiguration(tc)
                 .createScreen();
     }
@@ -53,6 +54,8 @@ public class GameWindow {
 
         // kill lanterna
         this.screen.stopScreen();
+
+        System.exit(0);
     }
 
     private void render() throws IOException {
@@ -83,16 +86,14 @@ public class GameWindow {
         for (int i = 0; i < tilemap.getShape()[0]; i++) {
             for (int j = 0; j < tilemap.getShape()[1]; j++) {
                 Tile tile = tilemap.getTile(i, j);
-                char glyph = tile.getGlyph();
-                TextCharacter tc = new TextCharacter(glyph, ANSI.WHITE, ANSI.BLACK);
-                screen.setCharacter(new TerminalPosition(i, j), tc);
+                screen.setCharacter(new TerminalPosition(i, j), tile.toTC());
             }
         }
 
     }
 
     private void handleInput() throws IOException {
-       KeyStroke key = screen.readInput();
+        KeyStroke key = screen.readInput();
         if (key == null) {
             return;
         }

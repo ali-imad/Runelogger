@@ -1,12 +1,13 @@
 package model;
 
 import com.googlecode.lanterna.input.KeyType;
+import model.actor.Actor;
 
 public class Game {
     private static boolean gameIsRunning;
     private final String title;
     private final Actor player;  // TODO: convert to Singleton Player class
-    static private World world;
+    private static World world;
 
     public Game(String name, int mapWidth, int mapHeight) {
         this.title = name;

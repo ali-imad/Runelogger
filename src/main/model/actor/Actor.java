@@ -1,9 +1,9 @@
 package model.actor;
 
 public class Actor {
-    private int[] pos;
     private final char glyph;
     private final String label;
+    private int[] pos;
 
     public Actor(char glyph, String name, int x, int y) {
         this.glyph = glyph;
@@ -15,16 +15,24 @@ public class Actor {
         return pos;
     }
 
-    public void setPos(int x, int y) {
-        this.pos = new int[]{x, y};
-    }
-
     public void setPos(int[] newPos) {
         this.pos = newPos;
     }
 
+    public void setPos(int x, int y) {
+        this.pos = new int[]{x, y};
+    }
+
+    public int getX() {
+        return this.pos[0];
+    }
+
     public void setX(int x) {
         this.pos[0] = x;
+    }
+
+    public int getY() {
+        return this.pos[1];
     }
 
     public void setY(int y) {

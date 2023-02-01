@@ -25,12 +25,12 @@ class TestWorld {
     @Test
     void testInitMap() {
         // simplest map
-        testWorld.resetMap(1, 1);
+        testWorld.map = new GameMap(1, 1);
         assertArrayEquals(new int[]{1, 1}, testWorld.getMap().getShape());
         assertEquals('#', testWorld.getMap().getTile(0, 0).getGlyph());
 
         // square map
-        testWorld.resetMap(8, 8);
+        testWorld.map = new GameMap(8, 8);
         assertArrayEquals(new int[]{8, 8}, testWorld.getMap().getShape());
         for (int i = 0; i < 8; i++) {
             Stream<Tile> row = Arrays.stream(testWorld.getMap().getTiles()[i]);

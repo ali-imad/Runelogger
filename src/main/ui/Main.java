@@ -1,6 +1,6 @@
 package ui;
 
-import model.Game;
+import model.game.Game;
 
 import java.io.IOException;
 

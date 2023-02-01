@@ -3,13 +3,14 @@ package ui;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextCharacter;
+import com.googlecode.lanterna.graphics.TextGraphics;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
-import model.Game;
 import model.GameMap;
 import model.actor.Actor;
+import model.game.Game;
 import model.tile.Tile;
 
 import java.awt.*;
@@ -21,10 +22,16 @@ import static java.lang.Math.max;
 import static java.lang.Math.min;
 
 public class GameWindow {
+    private static final int CONSOLE_PAD_X = 2;
+    private static final int CONSOLE_PAD_Y = 1;
     private static Game game;
+    // the next two views are static, and thus we should never need to reconstruct them
+    private static ScreenView consoleView;
+    private static ScreenView statusView;
     private final Screen screen;
-    private Rectangle view;
     private final TerminalSize size;
+    // view for the viewport mapped to the game map
+    private ScreenView gameView;
 
     public GameWindow(int gameW, int gameH, int viewW, int viewH, Game unattached) throws IOException {
         SwingTerminalFontConfiguration tc;
@@ -37,7 +44,12 @@ public class GameWindow {
                 .setTerminalEmulatorTitle(game.getTitle())
                 .setTerminalEmulatorFontConfiguration(tc)
                 .createScreen();
-        this.view = new Rectangle(0, 0, viewW, viewH);
+        this.gameView = new ScreenView(0, 0, viewW, viewH);
+
+        statusView = new ScreenView(viewW, 0, gameW - viewW, viewH);
+        consoleView = new ScreenView(CONSOLE_PAD_X, viewH + CONSOLE_PAD_Y, gameW - CONSOLE_PAD_X, gameH - viewH - CONSOLE_PAD_Y);
+        // *2 because padding is on both sides
+        game.buildConsole(consoleView.height - CONSOLE_PAD_Y * 2, consoleView.width - CONSOLE_PAD_X * 2);
     }
 
     public void run() throws IOException {
@@ -65,27 +77,52 @@ public class GameWindow {
         // clear the old screen
         screen.clear();
 
-        // set view based on actor position
+        // set game viewport based on actor position
         this.clampViewToActor();
 
         // draw to screen
-        this.drawTileMap();
-        this.drawEntites();
-        this.drawActors();
+        this.renderGameMap();    // refresh the new screen
+        this.renderLogWindow();  // bottom part of the screen
+        this.renderStatusWindow();  // right side of the screen
 
-        // refresh the new screen
         screen.refresh();
+    }
+
+    private void renderStatusWindow() {
+    }
+
+    // REQUIRES: game.console to exist
+    // MODIFIES: screen
+    // EFFECTS: prints out the console messages to the screen
+    private void renderLogWindow() {
+        int startY = consoleView.getY1();
+        String[] log = game.getConsole();
+        int endY = min(startY + log.length, consoleView.getY2());
+        int i = 0;
+        for (int y = startY; y < endY; y++) {
+            TextGraphics msg = screen.newTextGraphics();
+            TerminalPosition pos = new TerminalPosition(consoleView.getX1(), y);
+            msg.setForegroundColor(ANSI.CYAN);
+            msg.putString(pos, log[i]);
+            i++;
+        }
+    }
+
+    private void renderGameMap() {
+        this.drawTileMap();
+        this.drawEntities();
+        this.drawActors();
     }
 
     private void drawActors() {
         for (Actor a : game.getWorld().getActors()) {
-            TerminalPosition pos = new TerminalPosition(a.getPos()[0], a.getPos()[1]);
+            TerminalPosition pos = new TerminalPosition(a.getX(), a.getY());
             int actorX = pos.getColumn();
             int actorY = pos.getRow();
-            if (view.x <= actorX && actorX <= view.x + view.width) {
-                if (view.y <= actorY && actorY <= view.y + view.height) {
-                    int terminalX = actorX - this.view.x;
-                    int terminalY = actorY - this.view.y;
+            if (gameView.x <= actorX && actorX <= gameView.x + gameView.width) {
+                if (gameView.y <= actorY && actorY <= gameView.y + gameView.height) {
+                    int terminalX = actorX - this.gameView.x;
+                    int terminalY = actorY - this.gameView.y;
                     TextCharacter tc = new TextCharacter(a.getGlyph(), ANSI.CYAN, ANSI.BLACK);
                     screen.setCharacter(new TerminalPosition(terminalX, terminalY), tc);
                 }
@@ -93,19 +130,17 @@ public class GameWindow {
         }
     }
 
-    private void drawEntites() {
+    private void drawEntities() {
     }
 
     private void drawTileMap() {
         clampViewToActor();
 
         GameMap tilemap = game.getWorld().getMap();
-        for (int i = this.view.x; i < this.view.x + this.view.width; i++) {
-            for (int j = this.view.y; j < this.view.y + this.view.height; j++) {
-//        for (int i = 0; i < tilemap.getWidth(); i++) {
-//            for (int j = 0; j < tilemap.getHeight(); j++) {
-                int terminalX = i - this.view.x;
-                int terminalY = j - this.view.y;
+        for (int i = this.gameView.x; i < this.gameView.x + this.gameView.width; i++) {
+            for (int j = this.gameView.y; j < this.gameView.y + this.gameView.height; j++) {
+                int terminalX = i - this.gameView.x;
+                int terminalY = j - this.gameView.y;
                 Tile tile = tilemap.getTile(i, j);
                 screen.setCharacter(new TerminalPosition(terminalX, terminalY), tile.toTC());
             }
@@ -115,19 +150,19 @@ public class GameWindow {
 
     private void clampViewToActor() {
         // clamp to the left
-        int minViewX = max(0, game.getPlayer().getPos()[0] - this.view.width / 2);
+        int minViewX = max(0, game.getPlayer().getX() - this.gameView.width / 2);
         // clamp that result to the right (it will preserve the old one if its being used)
-        int newViewX = min(game.getWorld().getMap().getWidth() - this.view.width, minViewX);
+        int newViewX = min(game.getWorld().getMap().getWidth() - this.gameView.width, minViewX);
 
         // do the same thing to y
-        // clamp to the left
-        int minViewY = max(0, game.getPlayer().getPos()[1] - this.view.height / 2);
-        // clamp that result to the right (it will preserve the old one if its being used)
-        int newViewY = min(game.getWorld().getMap().getHeight() - this.view.height, minViewY);
-        this.view = new Rectangle(newViewX, newViewY, this.view.width, this.view.height);
+        // clamp to the top if needed
+        int minViewY = max(0, game.getPlayer().getY() - this.gameView.height / 2);
+        // clamp that result to the bottom
+        int newViewY = min(game.getWorld().getMap().getHeight() - this.gameView.height, minViewY);
+        this.gameView = new ScreenView(newViewX, newViewY, this.gameView.width, this.gameView.height);
     }
 
-        private void handleInput() throws IOException {
+    private void handleInput() throws IOException {
         KeyStroke key = screen.readInput();
         if (key == null) {
             return;

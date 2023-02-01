@@ -6,19 +6,12 @@ import model.tile.Tile;
 import java.util.ArrayList;
 
 public class World {
-    private GameMap map;  // presently active tiles
+    GameMap map;  // presently active tiles
     private final ArrayList<Actor> actors;  // list of actors
 
     public World(Actor player, int w, int h) {
         this.actors = new ArrayList<>();
         this.actors.add(player);
-        this.resetMap(w, h);
-    }
-
-    // REQUIRES:
-    // MODIFIES: this.map
-    // EFFECTS: Set the current World object to have a blank map of size wxh
-    public void resetMap(int w, int h) {
         this.map = new GameMap(w, h);
     }
 

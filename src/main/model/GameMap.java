@@ -94,4 +94,12 @@ public class GameMap {
                 throw new IllegalArgumentException(kind.name() + " is not a TileKind!");
         }
     }
+
+    public int getWidth() {
+        return this.getShape()[0];
+    }
+
+    public int getHeight() {
+        return this.getShape()[1];
+    }
 }

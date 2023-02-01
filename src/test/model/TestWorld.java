@@ -1,5 +1,6 @@
 package model;
 
+import model.actor.Actor;
 import model.tile.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

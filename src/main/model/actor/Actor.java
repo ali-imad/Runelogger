@@ -1,15 +1,9 @@
-package model;
+package model.actor;
 
 public class Actor {
     private int[] pos;
     private final char glyph;
     private final String label;
-
-    public Actor(char glyph, String name) {
-        this.glyph = glyph;
-        this.pos = new int[]{0, 0};
-        this.label = name;
-    }
 
     public Actor(char glyph, String name, int x, int y) {
         this.glyph = glyph;

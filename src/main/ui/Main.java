@@ -5,12 +5,12 @@ import model.game.Game;
 import java.io.IOException;
 
 public class Main {
-    static final int SCREEN_WIDTH       = 140;
-    static final int SCREEN_HEIGHT      = 60;
-    static final int MAP_WIDTH          = 200;
-    static final int MAP_HEIGHT         = 80;
-    static final int VIEWPORT_WIDTH     = 90;
-    static final int VIEWPORT_HEIGHT    = 50;
+    static final int SCREEN_WIDTH = 120;
+    static final int SCREEN_HEIGHT = 60;
+    static final int MAP_WIDTH = 200;
+    static final int MAP_HEIGHT = 80;
+    static final int VIEWPORT_WIDTH = 90;
+    static final int VIEWPORT_HEIGHT = 50;
 
     public static void main(String[] args) throws IOException {
         Game game = new Game("Petunia", MAP_WIDTH, MAP_HEIGHT);

@@ -21,6 +21,8 @@ import static com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguratio
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
+// TODO: split up GameWindow into more abstract classes
+
 public class GameWindow {
     private static final int CONSOLE_PAD_X = 2;
     private static final int CONSOLE_PAD_Y = 1;
@@ -151,10 +153,11 @@ public class GameWindow {
         final int WINDOW_PAD_X = 2;
         final int LABEL_PAD_Y = 2;
         final int LABEL_PAD_X = 0;
-        final int Y_SPACING_BETWEEN = LABEL_PAD_Y + 4;
+        final int Y_SPACING_BETWEEN = 4;
+        final char BAR_CHAR = '#';
 
         int startX = statusView.getX1() + WINDOW_PAD_X;
-        int endX = statusView.getX2() - WINDOW_PAD_X;
+        int MAX_WIDTH = statusView.getX2() - startX - WINDOW_PAD_X;
         int startY = statusView.getY1() + WINDOW_PAD_Y;
         int endY = statusView.getY2() - WINDOW_PAD_Y;
 
@@ -163,22 +166,32 @@ public class GameWindow {
                 manaBar,
         };
 
-        int i = startX;
         int j = startY;
         for (StatusBar b : bars) {
+            int x = startX;
             // render the label
             TextGraphics label = screen.newTextGraphics();
-            TerminalPosition labelPos = new TerminalPosition(i, j);
+            TerminalPosition labelPos = new TerminalPosition(x, j);
 
             label.setForegroundColor(b.getColor());
 //            label.putString(labelPos, b.getLabel());
             label.putString(labelPos, String.format("%s: %d / %d", b.getLabel(), b.getCurrentValue(), b.getMaxValue()));
 
-            i += LABEL_PAD_X;
+            x += LABEL_PAD_X;
             j += LABEL_PAD_Y;
 
-            // render the bar
+            float percent = Float.min(1.0F, ((float) b.getCurrentValue() / (float) b.getMaxValue()));
 
+//            game.pushConsole(String.valueOf(endX - startX));
+            game.pushConsole(String.valueOf(percent));
+            int endX = Math.round((float) (startX + (MAX_WIDTH * percent)));
+            game.pushConsole(String.valueOf(endX - startX));
+
+            // render the bar
+            for (int i = x; i < endX; i++) {
+                TextCharacter tc = new TextCharacter(BAR_CHAR, b.getColor(), ANSI.BLACK);
+                screen.setCharacter(new TerminalPosition(i, j), tc);
+            }
 
             j += Y_SPACING_BETWEEN;
         }

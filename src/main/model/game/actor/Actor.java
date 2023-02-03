@@ -122,7 +122,7 @@ public class Actor {
     }
 
     public void dmg(int dhp) {
-        this.hp -= hp;
+        this.hp -= dhp;
     }
 
     public int getAtk() {

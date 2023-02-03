@@ -90,6 +90,12 @@ public class Game {
                 this.pushConsole("Move Right");
                 this.nextEvent = MOVE_RIGHT;
                 break;
+            case ('v'):
+                this.player.dmg(1);
+                break;
+            case ('c'):
+                this.player.dmg(-1);
+                break;
             default:
                 break;
         }

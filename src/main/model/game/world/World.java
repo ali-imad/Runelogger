@@ -1,22 +1,20 @@
-package model;
+package model.game.world;
 
-import model.actor.Actor;
-import model.tile.Tile;
+import model.game.GameMap;
+import model.game.actor.Actor;
+import model.game.tile.Tile;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 public class World {
-    GameMap map;  // presently active tiles
     private final ArrayList<Actor> actors;  // list of actors
+    private GameMap map;  // presently active tiles
 
     public World(Actor player, int w, int h) {
         this.actors = new ArrayList<>();
         this.actors.add(player);
         this.map = new GameMap(w, h);
-    }
-
-    public GameMap getMap() {
-        return this.map;
     }
 
     // REQUIRES: actor is in actors
@@ -28,16 +26,27 @@ public class World {
         Tile tileToReach = this.map.getTile(newPos[0], newPos[1]);
 
         if (tileToReach.isWalkable()) {
-            actor.setPos(newPos);
+            if (Objects.isNull(tileToReach.getStanding())) {
+                this.map.getTile(actor.getX(), actor.getY()).emptyStanding();
+                actor.setPos(newPos);
+                tileToReach.setStanding(actor);
+            } else {
+                Actor toAttack = tileToReach.getStanding();
+                actor.attack(toAttack);
+            }
         } else {
-            System.out.println("BLOCKED");
+
         }
     }
 
     public void setBasicMap() {
         int hollowW = getMap().getShape()[0] - 2;
         int hollowH = getMap().getShape()[1] - 2;
-        this.getMap().chiselRectangle(1,1, hollowW, hollowH);
+        this.getMap().chiselRectangle(1, 1, hollowW, hollowH);
+    }
+
+    public GameMap getMap() {
+        return this.map;
     }
 
     public Actor[] getActors() {

@@ -1,7 +1,8 @@
 package model;
 
-import model.actor.Actor;
-import model.tile.Tile;
+import model.game.actor.Player;
+import model.game.tile.Tile;
+import model.game.world.World;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,30 +13,27 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class TestWorld {
-    private World testWorld;
-    static final int testWidth = 40;
-    static final int testHeight = 30;
+    private World testWorldSmall;
+    private World testWorldBasic;
 
     @BeforeEach
     void runBefore() {
-        Actor testActor = new Actor('@', "test actor", 0, 0);
-        testWorld = new World(testActor, testWidth, testHeight);
-    }
-
-    @Test
-    void testInitMap() {
+        Player testPlayer = new Player(0, 0);
+        testWorldSmall = new World(testPlayer, 1, 1);
         // simplest map
-        testWorld.map = new GameMap(1, 1);
-        assertArrayEquals(new int[]{1, 1}, testWorld.getMap().getShape());
-        assertEquals('#', testWorld.getMap().getTile(0, 0).getGlyph());
+        assertArrayEquals(new int[]{1, 1}, testWorldSmall.getMap().getShape());
+        assertEquals('#', testWorldSmall.getMap().getTile(0, 0).getGlyph());
 
-        // square map
-        testWorld.map = new GameMap(8, 8);
-        assertArrayEquals(new int[]{8, 8}, testWorld.getMap().getShape());
+        testWorldBasic = new World(testPlayer, 8, 8);
+        // simplest map
+        assertArrayEquals(new int[]{8, 8}, testWorldBasic.getMap().getShape());
         for (int i = 0; i < 8; i++) {
-            Stream<Tile> row = Arrays.stream(testWorld.getMap().getTiles()[i]);
+            Stream<Tile> row = Arrays.stream(testWorldBasic.getMap().getTiles()[i]);
             row.forEach(tile -> assertEquals('#', tile.getGlyph()));
         }
     }
 
+    @Test
+    void testInitMap() {
+    }
 }

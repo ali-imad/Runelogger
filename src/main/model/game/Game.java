@@ -1,29 +1,30 @@
 package model.game;
 
 import com.googlecode.lanterna.input.KeyType;
-import model.World;
-import model.actor.Actor;
+import model.game.world.World;
+import model.game.actor.Actor;
+import model.game.actor.Player;
+
+import static model.game.GameEvent.*;
 
 public class Game {
     private static boolean gameIsRunning;
-    private final String title;
-    private final Actor player;  // TODO: convert to Player class
     private static World world;
-
+    private final String title;
+    private final Player player;  // TODO: convert to Player class
     private ConsoleMessageQueue console;
+    private GameEvent nextEvent;
 
     public Game(String name, int mapWidth, int mapHeight) {
         this.title = name;
-        this.player = new Actor('@', "Player", mapWidth / 2, mapHeight / 2);
+//        this.player = new Player(  mapWidth / 2, mapHeight / 2);
+        this.player = new Player(mapWidth / 10, mapHeight / 10);
         world = new World(this.player, mapWidth, mapHeight);
+        this.nextEvent = REST;
     }
 
     public static boolean isGameIsRunning() {
         return gameIsRunning;
-    }
-
-    public static void killGame() {
-        gameIsRunning = false;
     }
 
     // MODIFIES: this
@@ -37,15 +38,30 @@ public class Game {
         gameIsRunning = true;
     }
 
+    public World getWorld() {
+        return world;
+    }
+
     // REQUIRES: must be run in game loop. this.init() must be run before this.run()
     // MODIFIES: this
     // EFFECTS: Run the game loop and necessary game system logic to play the game
     public void run() {
-
-    }
-
-    public World getWorld() {
-        return world;
+        switch (this.nextEvent) {
+            case MOVE_RIGHT:
+                getWorld().moveActorAndCollide(getPlayer(), 1, 0);
+                break;
+            case MOVE_DOWN:
+                getWorld().moveActorAndCollide(getPlayer(), 0, 1);
+                break;
+            case MOVE_UP:
+                getWorld().moveActorAndCollide(getPlayer(), 0, -1);
+                break;
+            case MOVE_LEFT:
+                getWorld().moveActorAndCollide(getPlayer(), -1, 0);
+                break;
+            default:
+        }
+        this.nextEvent = REST;
     }
 
     public Actor getPlayer() {
@@ -60,33 +76,37 @@ public class Game {
         switch (key) {
             case ('h'):
                 this.pushConsole("Move Left");
-                getWorld().moveActorAndCollide(getPlayer(), -1, 0);
+                this.nextEvent = MOVE_LEFT;
                 break;
             case ('j'):
                 this.pushConsole("Move Down");
-                getWorld().moveActorAndCollide(getPlayer(), 0, 1);
+                this.nextEvent = MOVE_DOWN;
                 break;
             case ('k'):
                 this.pushConsole("Move Up");
-                getWorld().moveActorAndCollide(getPlayer(), 0, -1);
+                this.nextEvent = MOVE_UP;
                 break;
             case ('l'):
                 this.pushConsole("Move Right");
-                getWorld().moveActorAndCollide(getPlayer(), 1, 0);
+                this.nextEvent = MOVE_RIGHT;
                 break;
             default:
                 break;
         }
     }
 
+    public void pushConsole(String newLog) {
+        console.add(newLog);
+    }
+
     public void processInput(KeyType kt) {
-        switch (kt) {
-            case Escape:
-                killGame();
-                break;
-            default:
-                break;
+        if (kt == KeyType.Escape) {
+            killGame();
         }
+    }
+
+    public static void killGame() {
+        gameIsRunning = false;
     }
 
     public void buildConsole(int lines, int lineWidth) {
@@ -95,10 +115,6 @@ public class Game {
 
     public String[] getConsole() {
         return console.getMessages().toArray(new String[0]);
-    }
-
-    public void pushConsole(String newLog) {
-        console.add(newLog);
     }
 }
 

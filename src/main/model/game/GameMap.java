@@ -1,16 +1,16 @@
-package model;
+package model.game;
 
-import model.tile.Floor;
-import model.tile.Tile;
-import model.tile.TileKind;
-import model.tile.Wall;
+import model.game.tile.Floor;
+import model.game.tile.Tile;
+import model.game.tile.TileKind;
+import model.game.tile.Wall;
 
 import static java.lang.Math.*;
-import static model.tile.TileKind.FLOOR;
-import static model.tile.TileKind.WALL;
+import static model.game.tile.TileKind.FLOOR;
+import static model.game.tile.TileKind.WALL;
 
 public class GameMap {
-//    private final static TextColor[] COLORS = TextColor.ANSI.values();
+    //    private final static TextColor[] COLORS = TextColor.ANSI.values();
     private final Tile[][] tiles;
     private final int[] shape;
 
@@ -27,11 +27,23 @@ public class GameMap {
         this.shape = new int[]{mapWidth, mapHeight};
     }
 
-    // REQUIRES:
-    // MODIFIES:
-    // EFFECTS: Return shape of the current map
-    public int[] getShape() {
-        return this.shape;
+    // REQUIRES: x < this.shape[0], y < this.shape[1]
+    // MODIFIES: this.tiles[x][y]
+    // EFFECTS: Set a single tile to a new tile. Pretty wrapper
+    public void setTile(int x, int y, TileKind kind) {
+//        TextColor color = COLORS[random.nextInt(COLORS.length)];
+        switch (kind) {
+            case FLOOR:
+//                this.tiles[x][y] = new Floor(color, BLACK);
+                this.tiles[x][y] = new Floor();
+                break;
+            case WALL:
+//                this.tiles[x][y] = new Wall(WHITE, color);
+                this.tiles[x][y] = new Wall();
+                break;
+            default:
+                throw new IllegalArgumentException(kind.name() + " is not a TileKind!");
+        }
     }
 
     public Tile[][] getTiles() {
@@ -45,7 +57,7 @@ public class GameMap {
     // REQUIRES: this.shape[0] > x + w, this.shape[1] > y + h
     // MODIFIES: this.tiles[x][y]
     // EFFECTS: Set a rectangle into floor tiles
-    void chiselRectangle(int x, int y, int w, int h) {
+    public void chiselRectangle(int x, int y, int w, int h) {
         for (int i = x; i < w + x; i++) {
             for (int j = y; j < h + y; j++) {
                 this.setTile(i, j, FLOOR);
@@ -53,7 +65,7 @@ public class GameMap {
         }
     }
 
-    void chiselCircle(int x, int y, int r) {
+    public void chiselCircle(int x, int y, int r) {
         // based off equation of a circle:
         // r^2 = (x-a)^2 + (y-b)^2
 
@@ -76,27 +88,15 @@ public class GameMap {
 
     }
 
-    // REQUIRES: x < this.shape[0], y < this.shape[1]
-    // MODIFIES: this.tiles[x][y]
-    // EFFECTS: Set a single tile to a new tile. Pretty wrapper
-    public void setTile(int x, int y, TileKind kind) {
-//        TextColor color = COLORS[random.nextInt(COLORS.length)];
-        switch (kind) {
-            case FLOOR:
-//                this.tiles[x][y] = new Floor(color, BLACK);
-                this.tiles[x][y] = new Floor();
-                break;
-            case WALL:
-//                this.tiles[x][y] = new Wall(WHITE, color);
-                this.tiles[x][y] = new Wall();
-                break;
-            default:
-                throw new IllegalArgumentException(kind.name() + " is not a TileKind!");
-        }
-    }
-
     public int getWidth() {
         return this.getShape()[0];
+    }
+
+    // REQUIRES:
+    // MODIFIES:
+    // EFFECTS: Return shape of the current map
+    public int[] getShape() {
+        return this.shape;
     }
 
     public int getHeight() {

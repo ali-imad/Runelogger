@@ -8,10 +8,10 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
-import model.GameMap;
-import model.actor.Actor;
+import model.game.GameMap;
+import model.game.actor.Actor;
 import model.game.Game;
-import model.tile.Tile;
+import model.game.tile.Tile;
 
 import java.awt.*;
 import java.io.IOException;
@@ -24,10 +24,14 @@ import static java.lang.Math.min;
 public class GameWindow {
     private static final int CONSOLE_PAD_X = 2;
     private static final int CONSOLE_PAD_Y = 1;
+    private static final int MAP_PAD_X = 2;
+    private static final int MAP_PAD_Y = 1;
     private static Game game;
     // the next two views are static, and thus we should never need to reconstruct them
     private static ScreenView consoleView;
     private static ScreenView statusView;
+    private static StatusBar healthBar;
+    private static StatusBar manaBar;
     private final Screen screen;
     private final TerminalSize size;
     // view for the viewport mapped to the game map
@@ -37,19 +41,23 @@ public class GameWindow {
         SwingTerminalFontConfiguration tc;
         game = unattached;
         tc = new SwingTerminalFontConfiguration(false, NOTHING,
-                new Font(Font.MONOSPACED, Font.PLAIN, 14));
+//                new Font(Font.MONOSPACED, Font.PLAIN, 14));  // uncomment in prod
+                new Font("Fixedsys Excelsior", Font.PLAIN, 16));
         this.size = new TerminalSize(gameW, gameH);
         this.screen = new DefaultTerminalFactory()
                 .setInitialTerminalSize(this.size)
                 .setTerminalEmulatorTitle(game.getTitle())
                 .setTerminalEmulatorFontConfiguration(tc)
                 .createScreen();
-        this.gameView = new ScreenView(0, 0, viewW, viewH);
+        this.gameView = new ScreenView(MAP_PAD_X, MAP_PAD_Y, viewW - MAP_PAD_X, viewH - MAP_PAD_Y);
 
         statusView = new ScreenView(viewW, 0, gameW - viewW, viewH);
         consoleView = new ScreenView(CONSOLE_PAD_X, viewH + CONSOLE_PAD_Y, gameW - CONSOLE_PAD_X, gameH - viewH - CONSOLE_PAD_Y);
         // *2 because padding is on both sides
         game.buildConsole(consoleView.height - CONSOLE_PAD_Y * 2, consoleView.width - CONSOLE_PAD_X * 2);
+
+        healthBar = new StatusBar(game.getPlayer().getMaxHP(), ANSI.RED, "Health");
+        manaBar = new StatusBar(game.getPlayer().getMaxMP(), ANSI.BLUE, "Mana");
     }
 
     public void run() throws IOException {
@@ -88,7 +96,36 @@ public class GameWindow {
         screen.refresh();
     }
 
-    private void renderStatusWindow() {
+    private void handleInput() throws IOException {
+        KeyStroke key = screen.readInput();
+        if (key == null) {
+            return;
+        }
+        if (key.getCharacter() != null) {
+            game.processInput(key.getCharacter());
+        } else if (key.getKeyType() != null) {
+            game.processInput(key.getKeyType());
+        }
+    }
+
+    private void clampViewToActor() {
+        // clamp to the left
+        int minViewX = max(0, game.getPlayer().getX() - this.gameView.width / 2);
+        // clamp that result to the right (it will preserve the old one if its being used)
+        int newViewX = min(game.getWorld().getMap().getWidth() - this.gameView.width, minViewX);
+
+        // do the same thing to y
+        // clamp to the top if needed
+        int minViewY = max(0, game.getPlayer().getY() - this.gameView.height / 2);
+        // clamp that result to the bottom
+        int newViewY = min(game.getWorld().getMap().getHeight() - this.gameView.height, minViewY);
+        this.gameView = new ScreenView(newViewX, newViewY, this.gameView.width, this.gameView.height);
+    }
+
+    private void renderGameMap() {
+        this.drawTileMap();
+        this.drawEntities();
+        this.drawActors();
     }
 
     // REQUIRES: game.console to exist
@@ -108,10 +145,61 @@ public class GameWindow {
         }
     }
 
-    private void renderGameMap() {
-        this.drawTileMap();
-        this.drawEntities();
-        this.drawActors();
+    private void renderStatusWindow() {
+        this.updateStatusBars();
+        final int WINDOW_PAD_Y = 2;
+        final int WINDOW_PAD_X = 2;
+        final int LABEL_PAD_Y = 2;
+        final int LABEL_PAD_X = 0;
+        final int Y_SPACING_BETWEEN = LABEL_PAD_Y + 4;
+
+        int startX = statusView.getX1() + WINDOW_PAD_X;
+        int endX = statusView.getX2() - WINDOW_PAD_X;
+        int startY = statusView.getY1() + WINDOW_PAD_Y;
+        int endY = statusView.getY2() - WINDOW_PAD_Y;
+
+        StatusBar[] bars = new StatusBar[]{
+                healthBar,
+                manaBar,
+        };
+
+        int i = startX;
+        int j = startY;
+        for (StatusBar b : bars) {
+            // render the label
+            TextGraphics label = screen.newTextGraphics();
+            TerminalPosition labelPos = new TerminalPosition(i, j);
+
+            label.setForegroundColor(b.getColor());
+//            label.putString(labelPos, b.getLabel());
+            label.putString(labelPos, String.format("%s: %d / %d", b.getLabel(), b.getCurrentValue(), b.getMaxValue()));
+
+            i += LABEL_PAD_X;
+            j += LABEL_PAD_Y;
+
+            // render the bar
+
+
+            j += Y_SPACING_BETWEEN;
+        }
+    }
+
+    private void drawTileMap() {
+        clampViewToActor();
+
+        GameMap tilemap = game.getWorld().getMap();
+        for (int i = this.gameView.x; i < this.gameView.x + this.gameView.width; i++) {
+            for (int j = this.gameView.y; j < this.gameView.y + this.gameView.height; j++) {
+                int terminalX = i - this.gameView.x + MAP_PAD_X;
+                int terminalY = j - this.gameView.y + MAP_PAD_Y;
+                Tile tile = tilemap.getTile(i, j);
+                screen.setCharacter(new TerminalPosition(terminalX, terminalY), tile.toTC());
+            }
+        }
+
+    }
+
+    private void drawEntities() {
     }
 
     private void drawActors() {
@@ -130,47 +218,14 @@ public class GameWindow {
         }
     }
 
-    private void drawEntities() {
-    }
+    // EFFECTS: Updates the status bars with appropriate values
+    private void updateStatusBars() {
+        // set health
+        healthBar.setMaxValue(game.getPlayer().getMaxHP());
+        healthBar.setCurrentValue(game.getPlayer().getHP());
 
-    private void drawTileMap() {
-        clampViewToActor();
-
-        GameMap tilemap = game.getWorld().getMap();
-        for (int i = this.gameView.x; i < this.gameView.x + this.gameView.width; i++) {
-            for (int j = this.gameView.y; j < this.gameView.y + this.gameView.height; j++) {
-                int terminalX = i - this.gameView.x;
-                int terminalY = j - this.gameView.y;
-                Tile tile = tilemap.getTile(i, j);
-                screen.setCharacter(new TerminalPosition(terminalX, terminalY), tile.toTC());
-            }
-        }
-
-    }
-
-    private void clampViewToActor() {
-        // clamp to the left
-        int minViewX = max(0, game.getPlayer().getX() - this.gameView.width / 2);
-        // clamp that result to the right (it will preserve the old one if its being used)
-        int newViewX = min(game.getWorld().getMap().getWidth() - this.gameView.width, minViewX);
-
-        // do the same thing to y
-        // clamp to the top if needed
-        int minViewY = max(0, game.getPlayer().getY() - this.gameView.height / 2);
-        // clamp that result to the bottom
-        int newViewY = min(game.getWorld().getMap().getHeight() - this.gameView.height, minViewY);
-        this.gameView = new ScreenView(newViewX, newViewY, this.gameView.width, this.gameView.height);
-    }
-
-    private void handleInput() throws IOException {
-        KeyStroke key = screen.readInput();
-        if (key == null) {
-            return;
-        }
-        if (key.getCharacter() != null) {
-            game.processInput(key.getCharacter());
-        } else if (key.getKeyType() != null) {
-            game.processInput(key.getKeyType());
-        }
+        // set mana
+        manaBar.setMaxValue(game.getPlayer().getMaxMP());
+        manaBar.setCurrentValue(game.getPlayer().getMP());
     }
 }

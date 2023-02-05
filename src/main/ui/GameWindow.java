@@ -54,7 +54,8 @@ public class GameWindow {
         this.gameView = new ScreenView(MAP_PAD_X, MAP_PAD_Y, viewW - MAP_PAD_X, viewH - MAP_PAD_Y);
 
         statusView = new ScreenView(viewW, 0, gameW - viewW, viewH);
-        consoleView = new ScreenView(CONSOLE_PAD_X, viewH + CONSOLE_PAD_Y, gameW - CONSOLE_PAD_X, gameH - viewH - CONSOLE_PAD_Y);
+        consoleView = new ScreenView(CONSOLE_PAD_X, viewH + CONSOLE_PAD_Y,
+                gameW - CONSOLE_PAD_X, gameH - viewH - CONSOLE_PAD_Y);
         // *2 because padding is on both sides
         game.buildConsole(consoleView.height - CONSOLE_PAD_Y * 2, consoleView.width - CONSOLE_PAD_X * 2);
 
@@ -159,41 +160,44 @@ public class GameWindow {
         int startX = statusView.getX1() + WINDOW_PAD_X;
         int maxWidth = statusView.getX2() - startX - WINDOW_PAD_X;
         int startY = statusView.getY1() + WINDOW_PAD_Y;
-        int endY = statusView.getY2() - WINDOW_PAD_Y;
+//        int endY = statusView.getY2() - WINDOW_PAD_Y;
 
         StatusBar[] bars = new StatusBar[]{
                 healthBar,
                 manaBar,
         };
 
-        int j = startY;
+        renderBarsWithLabels(bars, BAR_CHAR, Y_SPACING_BETWEEN, maxWidth, LABEL_PAD_X, LABEL_PAD_Y, startX, startY);
+    }
+
+    private void renderBarsWithLabels(StatusBar[] bars, char c, int btwn, int w, int padX, int padY, int x0, int y0) {
         for (StatusBar b : bars) {
-            int x = startX;
+            int x = x0;
             // render the label
             TextGraphics label = screen.newTextGraphics();
-            TerminalPosition labelPos = new TerminalPosition(x, j);
+            TerminalPosition labelPos = new TerminalPosition(x, y0);
 
             label.setForegroundColor(b.getColor());
 //            label.putString(labelPos, b.getLabel());
             label.putString(labelPos, String.format("%s: %d / %d", b.getLabel(), b.getCurrentValue(), b.getMaxValue()));
 
-            x += LABEL_PAD_X;
-            j += LABEL_PAD_Y;
+            x += padX;
+            y0 += padY;
 
             float percent = Float.min(1.0F, ((float) b.getCurrentValue() / (float) b.getMaxValue()));
 
-//            game.pushConsole(String.valueOf(endX - startX));
+//            game.pushConsole(String.valueOf(endX - x0));
             game.pushConsole(String.valueOf(percent));
-            int endX = Math.round((float) (startX + (maxWidth * percent)));
-            game.pushConsole(String.valueOf(endX - startX));
+            int endX = Math.round((x0 + (w * percent)));
+            game.pushConsole(String.valueOf(endX - x0));
 
             // render the bar
             for (int i = x; i < endX; i++) {
-                TextCharacter tc = new TextCharacter(BAR_CHAR, b.getColor(), ANSI.BLACK);
-                screen.setCharacter(new TerminalPosition(i, j), tc);
+                TextCharacter tc = new TextCharacter(c, b.getColor(), ANSI.BLACK);
+                screen.setCharacter(new TerminalPosition(i, y0), tc);
             }
 
-            j += Y_SPACING_BETWEEN;
+            y0 += btwn;
         }
     }
 

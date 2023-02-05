@@ -19,7 +19,8 @@ public class Actor {
     private int def;
 
     // TODO: convert to builder
-    public Actor(char glyph, String name, int x, int y, TextColor fgColor, TextColor bgColor, int mHP, int mMP, int atk, int def) {
+    public Actor(char glyph, String name, int x, int y, TextColor fgColor,
+                 TextColor bgColor, int mhp, int mmp, int atk, int def) {
         this.glyph = glyph;
         this.atk = atk;
         this.def = def;
@@ -27,10 +28,10 @@ public class Actor {
         this.label = name;
         this.fgColor = fgColor;
         this.bgColor = bgColor;
-        this.maxHP = mHP;
-        this.maxMP = mMP;
-        this.hp = mHP;
-        this.mp = mMP;
+        this.maxHP = mhp;
+        this.maxMP = mmp;
+        this.hp = mhp;
+        this.mp = mmp;
     }
 
     public TextColor getFgColor() {

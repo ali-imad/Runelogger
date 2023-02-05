@@ -1,9 +1,9 @@
 package model.game;
 
 import com.googlecode.lanterna.input.KeyType;
-import model.game.world.World;
 import model.game.actor.Actor;
 import model.game.actor.Player;
+import model.game.world.World;
 
 import static model.game.GameEvent.*;
 
@@ -75,19 +75,19 @@ public class Game {
     public void processInput(char key) {
         switch (key) {
             case ('h'):
-                this.pushConsole("Move Left");
+//                this.pushConsole("Move Left");
                 this.nextEvent = MOVE_LEFT;
                 break;
             case ('j'):
-                this.pushConsole("Move Down");
+//                this.pushConsole("Move Down");
                 this.nextEvent = MOVE_DOWN;
                 break;
             case ('k'):
-                this.pushConsole("Move Up");
+//                this.pushConsole("Move Up");
                 this.nextEvent = MOVE_UP;
                 break;
             case ('l'):
-                this.pushConsole("Move Right");
+//                this.pushConsole("Move Right");
                 this.nextEvent = MOVE_RIGHT;
                 break;
             case ('v'):
@@ -101,10 +101,6 @@ public class Game {
         }
     }
 
-    public void pushConsole(String newLog) {
-        console.add(newLog);
-    }
-
     public void processInput(KeyType kt) {
         if (kt == KeyType.Escape) {
             killGame();
@@ -113,6 +109,10 @@ public class Game {
 
     public static void killGame() {
         gameIsRunning = false;
+    }
+
+    public void pushConsole(String newLog) {
+        console.add(newLog);
     }
 
     public void buildConsole(int lines, int lineWidth) {

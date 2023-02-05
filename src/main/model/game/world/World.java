@@ -34,8 +34,6 @@ public class World {
                 Actor toAttack = tileToReach.getStanding();
                 actor.attack(toAttack);
             }
-        } else {
-
         }
     }
 

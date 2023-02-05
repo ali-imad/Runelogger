@@ -9,6 +9,7 @@ public class ScreenView extends Rectangle  {
     public ScreenView(int x, int y, int w, int h) {
         super(x, y, w, h);
     }
+
     public int getX1() {
         return this.x;
     }

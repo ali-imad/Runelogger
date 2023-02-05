@@ -8,9 +8,9 @@ import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
+import model.game.Game;
 import model.game.GameMap;
 import model.game.actor.Actor;
-import model.game.Game;
 import model.game.tile.Tile;
 
 import java.awt.*;
@@ -170,37 +170,6 @@ public class GameWindow {
         renderBarsWithLabels(bars, BAR_CHAR, Y_SPACING_BETWEEN, maxWidth, LABEL_PAD_X, LABEL_PAD_Y, startX, startY);
     }
 
-    private void renderBarsWithLabels(StatusBar[] bars, char c, int btwn, int w, int padX, int padY, int x0, int y0) {
-        for (StatusBar b : bars) {
-            int x = x0;
-            // render the label
-            TextGraphics label = screen.newTextGraphics();
-            TerminalPosition labelPos = new TerminalPosition(x, y0);
-
-            label.setForegroundColor(b.getColor());
-//            label.putString(labelPos, b.getLabel());
-            label.putString(labelPos, String.format("%s: %d / %d", b.getLabel(), b.getCurrentValue(), b.getMaxValue()));
-
-            x += padX;
-            y0 += padY;
-
-            float percent = Float.min(1.0F, ((float) b.getCurrentValue() / (float) b.getMaxValue()));
-
-//            game.pushConsole(String.valueOf(endX - x0));
-            game.pushConsole(String.valueOf(percent));
-            int endX = Math.round((x0 + (w * percent)));
-            game.pushConsole(String.valueOf(endX - x0));
-
-            // render the bar
-            for (int i = x; i < endX; i++) {
-                TextCharacter tc = new TextCharacter(c, b.getColor(), ANSI.BLACK);
-                screen.setCharacter(new TerminalPosition(i, y0), tc);
-            }
-
-            y0 += btwn;
-        }
-    }
-
     private void drawTileMap() {
         clampViewToActor();
 
@@ -244,5 +213,36 @@ public class GameWindow {
         // set mana
         manaBar.setMaxValue(game.getPlayer().getMaxMP());
         manaBar.setCurrentValue(game.getPlayer().getMP());
+    }
+
+    private void renderBarsWithLabels(StatusBar[] bars, char c, int btwn, int w, int padX, int padY, int x0, int y0) {
+        for (StatusBar b : bars) {
+            int x = x0;
+            // render the label
+            TextGraphics label = screen.newTextGraphics();
+            TerminalPosition labelPos = new TerminalPosition(x, y0);
+
+            label.setForegroundColor(b.getColor());
+//            label.putString(labelPos, b.getLabel());
+            label.putString(labelPos, String.format("%s: %d / %d", b.getLabel(), b.getCurrentValue(), b.getMaxValue()));
+
+            x += padX;
+            y0 += padY;
+
+            float percent = Float.min(1.0F, ((float) b.getCurrentValue() / (float) b.getMaxValue()));
+
+//            game.pushConsole(String.valueOf(endX - x0));
+//            game.pushConsole(String.valueOf(percent));
+            int endX = Math.round((x0 + (w * percent)));
+//            game.pushConsole(String.valueOf(endX - x0));
+
+            // render the bar
+            for (int i = x; i < endX; i++) {
+                TextCharacter tc = new TextCharacter(c, b.getColor(), ANSI.BLACK);
+                screen.setCharacter(new TerminalPosition(i, y0), tc);
+            }
+
+            y0 += btwn;
+        }
     }
 }

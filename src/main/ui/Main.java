@@ -5,7 +5,7 @@ import model.game.Game;
 import java.io.IOException;
 
 public class Main {
-    static final int SCREEN_WIDTH = 120;
+    static final int SCREEN_WIDTH = 140;
     static final int SCREEN_HEIGHT = 60;
     static final int MAP_WIDTH = 200;
     static final int MAP_HEIGHT = 80;

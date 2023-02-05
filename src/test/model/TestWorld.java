@@ -1,8 +1,8 @@
 package model;
 
-import model.game.actor.Player;
-import model.game.tile.Tile;
 import model.game.world.World;
+import model.game.world.actor.Player;
+import model.game.world.map.tile.Tile;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

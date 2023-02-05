@@ -1,14 +1,14 @@
 package model.game.world;
 
-import model.game.GameMap;
-import model.game.actor.Actor;
-import model.game.tile.Tile;
+import model.game.world.actor.Actor;
+import model.game.world.map.GameMap;
+import model.game.world.map.tile.Tile;
 
 import java.util.ArrayList;
 import java.util.Objects;
 
 public class World {
-    private final ArrayList<Actor> actors;  // list of actors
+    private ArrayList<Actor> actors;  // list of actors
     private GameMap map;  // presently active tiles
 
     public World(Actor player, int w, int h) {
@@ -37,17 +37,21 @@ public class World {
         }
     }
 
-    public void setBasicMap() {
-        int hollowW = getMap().getShape()[0] - 2;
-        int hollowH = getMap().getShape()[1] - 2;
-        this.getMap().chiselRectangle(1, 1, hollowW, hollowH);
+    public Actor[] getActors() {
+        return this.actors.toArray(new Actor[this.actors.size()]);
+    }
+
+    public void initBasicWorld() {
+        Actor player = this.actors.get(0);
+        this.actors = new ArrayList<>();
+        this.actors.add(player);
+//        this.getMap().setBasicMap(1, 1);
+        int pillars = this.getMap().getWidth() * this.getMap().getHeight();
+        pillars = Math.round(pillars * 0.07F);
+        this.getMap().setBasicCave(1, 1, pillars);
     }
 
     public GameMap getMap() {
         return this.map;
-    }
-
-    public Actor[] getActors() {
-        return this.actors.toArray(new Actor[this.actors.size()]);
     }
 }

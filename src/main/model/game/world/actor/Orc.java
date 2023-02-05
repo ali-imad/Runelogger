@@ -1,4 +1,4 @@
-package model.game.actor;
+package model.game.world.actor;
 
 import static com.googlecode.lanterna.TextColor.ANSI.BLACK;
 import static com.googlecode.lanterna.TextColor.ANSI.RED;

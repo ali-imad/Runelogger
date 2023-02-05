@@ -1,8 +1,8 @@
-package model.game.tile;
+package model.game.world.map.tile;
 
 import com.googlecode.lanterna.TextCharacter;
 import com.googlecode.lanterna.TextColor;
-import model.game.actor.Actor;
+import model.game.world.actor.Actor;
 
 import static com.googlecode.lanterna.TextColor.ANSI.BLACK;
 import static com.googlecode.lanterna.TextColor.ANSI.WHITE;

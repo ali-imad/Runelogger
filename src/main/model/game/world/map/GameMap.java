@@ -1,15 +1,18 @@
-package model.game;
+package model.game.world.map;
 
-import model.game.tile.Floor;
-import model.game.tile.Tile;
-import model.game.tile.TileKind;
-import model.game.tile.Wall;
+import model.game.world.map.tile.Floor;
+import model.game.world.map.tile.Tile;
+import model.game.world.map.tile.TileKind;
+import model.game.world.map.tile.Wall;
+
+import java.util.Random;
 
 import static java.lang.Math.*;
-import static model.game.tile.TileKind.FLOOR;
-import static model.game.tile.TileKind.WALL;
+import static model.game.world.map.tile.TileKind.FLOOR;
+import static model.game.world.map.tile.TileKind.WALL;
 
 public class GameMap {
+    private static Random random;
     //    private final static TextColor[] COLORS = TextColor.ANSI.values();
     private final Tile[][] tiles;
     private final int[] shape;
@@ -18,6 +21,7 @@ public class GameMap {
     // MODIFIES: this
     // EFFECTS: Set activeMap to be a blank map of all wall tiles
     public GameMap(int mapWidth, int mapHeight) {
+        this.random = new Random(34972595);
         this.tiles = new Tile[mapWidth][mapHeight];
         for (int i = 0; i < mapWidth; i++) {
             for (int j = 0; j < mapHeight; j++) {
@@ -54,17 +58,6 @@ public class GameMap {
         return this.tiles[x][y];
     }
 
-    // REQUIRES: this.shape[0] > x + w, this.shape[1] > y + h
-    // MODIFIES: this.tiles[x][y]
-    // EFFECTS: Set a rectangle into floor tiles
-    public void chiselRectangle(int x, int y, int w, int h) {
-        for (int i = x; i < w + x; i++) {
-            for (int j = y; j < h + y; j++) {
-                this.setTile(i, j, FLOOR);
-            }
-        }
-    }
-
     public void chiselCircle(int x, int y, int r) {
         // based off equation of a circle:
         // r^2 = (x-a)^2 + (y-b)^2
@@ -85,11 +78,41 @@ public class GameMap {
                 }
             }
         }
+    }
 
+    // REQUIRES:
+    // MODIFIES: this.tiles
+    // EFFECTS: creates a basic map and populates it with randomly placed single walls
+    //          p => number of pillars
+    //          xp => x padding
+    //          yp => y padding
+
+    public void setBasicCave(int xp, int yp, int p) {
+        this.setBasicMap(xp, yp);
+
+        for (int i = 0; i < p; i++) {
+            int x = random.nextInt(this.getWidth() - xp) + xp;
+            int y = random.nextInt(this.getHeight() - yp) + yp;
+
+            this.setTile(x, y, WALL);
+        }
+    }
+
+    // REQUIRES:
+    // MODIFIES: this.tiles
+    // EFFECTS: creates a hollowed out map with padding (xp, yp)
+    public void setBasicMap(int xp, int yp) {
+        int hollowW = getShape()[0] - (2 * xp);
+        int hollowH = getShape()[1] - (2 * yp);
+        this.chiselRectangle(xp, yp, hollowW, hollowH);
     }
 
     public int getWidth() {
         return this.getShape()[0];
+    }
+
+    public int getHeight() {
+        return this.getShape()[1];
     }
 
     // REQUIRES:
@@ -99,7 +122,14 @@ public class GameMap {
         return this.shape;
     }
 
-    public int getHeight() {
-        return this.getShape()[1];
+    // REQUIRES: this.shape[0] > x + w, this.shape[1] > y + h
+    // MODIFIES: this.tiles[x][y]
+    // EFFECTS: Set a rectangle into floor tiles
+    public void chiselRectangle(int x, int y, int w, int h) {
+        for (int i = x; i < w + x; i++) {
+            for (int j = y; j < h + y; j++) {
+                this.setTile(i, j, FLOOR);
+            }
+        }
     }
 }

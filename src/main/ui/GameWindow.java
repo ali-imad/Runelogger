@@ -9,9 +9,9 @@ import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
 import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
 import model.game.Game;
-import model.game.GameMap;
-import model.game.actor.Actor;
-import model.game.tile.Tile;
+import model.game.world.actor.Actor;
+import model.game.world.map.GameMap;
+import model.game.world.map.tile.Tile;
 
 import java.awt.*;
 import java.io.IOException;
@@ -60,7 +60,7 @@ public class GameWindow {
         game.buildConsole(consoleView.height - CONSOLE_PAD_Y * 2, consoleView.width - CONSOLE_PAD_X * 2);
 
         healthBar = new StatusBar(game.getPlayer().getMaxHP(), ANSI.RED, "Health");
-        manaBar = new StatusBar(game.getPlayer().getMaxMP(), ANSI.BLUE, "Mana");
+        manaBar = new StatusBar(game.getPlayer().getMaxMP(), ANSI.YELLOW, "Rage");
     }
 
     public void run() throws IOException {

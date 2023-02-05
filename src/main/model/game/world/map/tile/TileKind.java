@@ -1,4 +1,4 @@
-package model.game.tile;
+package model.game.world.map.tile;
 
 public enum TileKind {
     FLOOR,

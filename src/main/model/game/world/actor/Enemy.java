@@ -1,4 +1,4 @@
-package model.game.actor;
+package model.game.world.actor;
 
 import com.googlecode.lanterna.TextColor;
 

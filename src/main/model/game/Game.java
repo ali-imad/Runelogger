@@ -1,9 +1,9 @@
 package model.game;
 
 import com.googlecode.lanterna.input.KeyType;
-import model.game.actor.Actor;
-import model.game.actor.Player;
 import model.game.world.World;
+import model.game.world.actor.Actor;
+import model.game.world.actor.Player;
 
 import static model.game.GameEvent.*;
 
@@ -34,7 +34,7 @@ public class Game {
         int h = this.getWorld().getMap().getShape()[1];
         world = new World(this.player, w, h);
 
-        world.setBasicMap();
+        world.initBasicWorld();
         gameIsRunning = true;
     }
 

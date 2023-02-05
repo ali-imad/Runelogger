@@ -1,6 +1,6 @@
 package model;
 
-import model.game.GameMap;
+import model.game.world.map.GameMap;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 

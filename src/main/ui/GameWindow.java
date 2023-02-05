@@ -44,7 +44,7 @@ public class GameWindow {
         game = unattached;
         tc = new SwingTerminalFontConfiguration(false, NOTHING,
 //                new Font(Font.MONOSPACED, Font.PLAIN, 14));  // uncomment in prod
-                new Font("Fixedsys Excelsior", Font.PLAIN, 16));
+                new Font("Consolas", Font.PLAIN, 12));
         this.size = new TerminalSize(gameW, gameH);
         this.screen = new DefaultTerminalFactory()
                 .setInitialTerminalSize(this.size)
@@ -157,7 +157,7 @@ public class GameWindow {
         final char BAR_CHAR = '#';
 
         int startX = statusView.getX1() + WINDOW_PAD_X;
-        int MAX_WIDTH = statusView.getX2() - startX - WINDOW_PAD_X;
+        int maxWidth = statusView.getX2() - startX - WINDOW_PAD_X;
         int startY = statusView.getY1() + WINDOW_PAD_Y;
         int endY = statusView.getY2() - WINDOW_PAD_Y;
 
@@ -184,7 +184,7 @@ public class GameWindow {
 
 //            game.pushConsole(String.valueOf(endX - startX));
             game.pushConsole(String.valueOf(percent));
-            int endX = Math.round((float) (startX + (MAX_WIDTH * percent)));
+            int endX = Math.round((float) (startX + (maxWidth * percent)));
             game.pushConsole(String.valueOf(endX - startX));
 
             // render the bar
@@ -222,8 +222,8 @@ public class GameWindow {
             int actorY = pos.getRow();
             if (gameView.x <= actorX && actorX <= gameView.x + gameView.width) {
                 if (gameView.y <= actorY && actorY <= gameView.y + gameView.height) {
-                    int terminalX = actorX - this.gameView.x;
-                    int terminalY = actorY - this.gameView.y;
+                    int terminalX = actorX - this.gameView.x + MAP_PAD_X;
+                    int terminalY = actorY - this.gameView.y + MAP_PAD_Y;
                     TextCharacter tc = new TextCharacter(a.getGlyph(), ANSI.CYAN, ANSI.BLACK);
                     screen.setCharacter(new TerminalPosition(terminalX, terminalY), tc);
                 }

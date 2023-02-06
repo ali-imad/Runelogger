@@ -2,8 +2,8 @@ package model.game.world.actor;
 
 import com.googlecode.lanterna.TextColor;
 
-public class Actor {
-    private final char glyph;
+public abstract class Actor {
+    private char glyph;
     private final String label;
     private int[] pos;
 
@@ -124,6 +124,9 @@ public class Actor {
 
     public void dmg(int dhp) {
         this.hp -= dhp;
+        if (this.hp < 0) {
+            this.glyph = '%';
+        }
     }
 
     public int getAtk() {

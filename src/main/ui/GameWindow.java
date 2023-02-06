@@ -44,7 +44,8 @@ public class GameWindow {
         game = unattached;
         tc = new SwingTerminalFontConfiguration(false, NOTHING,
 //                new Font(Font.MONOSPACED, Font.PLAIN, 14));  // uncomment in prod
-                new Font("Consolas", Font.PLAIN, 12));
+//                new Font("Consolas", Font.PLAIN, 12));  // windows
+                new Font("Fixedsys Excelsior", Font.PLAIN, 16));
         this.size = new TerminalSize(gameW, gameH);
         this.screen = new DefaultTerminalFactory()
                 .setInitialTerminalSize(this.size)
@@ -197,7 +198,7 @@ public class GameWindow {
                 if (gameView.y <= actorY && actorY <= gameView.y + gameView.height) {
                     int terminalX = actorX - this.gameView.x + MAP_PAD_X;
                     int terminalY = actorY - this.gameView.y + MAP_PAD_Y;
-                    TextCharacter tc = new TextCharacter(a.getGlyph(), ANSI.CYAN, ANSI.BLACK);
+                    TextCharacter tc = new TextCharacter(a.getGlyph(), a.getFgColor(), a.getBgColor());
                     screen.setCharacter(new TerminalPosition(terminalX, terminalY), tc);
                 }
             }

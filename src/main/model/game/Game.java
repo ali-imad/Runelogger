@@ -75,19 +75,19 @@ public class Game {
     public void processInput(char key) {
         switch (key) {
             case ('h'):
-//                this.pushConsole("Move Left");
+                this.pushConsole("Move Left");
                 this.nextEvent = MOVE_LEFT;
                 break;
             case ('j'):
-//                this.pushConsole("Move Down");
+                this.pushConsole("Move Down");
                 this.nextEvent = MOVE_DOWN;
                 break;
             case ('k'):
-//                this.pushConsole("Move Up");
+                this.pushConsole("Move Up");
                 this.nextEvent = MOVE_UP;
                 break;
             case ('l'):
-//                this.pushConsole("Move Right");
+                this.pushConsole("Move Right");
                 this.nextEvent = MOVE_RIGHT;
                 break;
             case ('v'):

@@ -24,6 +24,7 @@ public class World {
 
     // REQUIRES: actor is in actors
     public void moveActorAndCollide(Actor actor, int dx, int dy) {
+        // TODO: move to Game?
         int[] newPos = actor.getPos().clone();
         newPos[0] += dx;
         newPos[1] += dy;
@@ -36,10 +37,41 @@ public class World {
                 actor.setPos(newPos);
                 tileToReach.setStanding(actor);
             } else {
-                Actor toAttack = tileToReach.getStanding();
-                actor.attack(toAttack);
+                actor.attack(tileToReach);
             }
         }
+    }
+
+    // MODIFIES: this.actors
+    // EFFECTS: parse the tilemap and repopulate this.actors
+    public void updateActors() {
+        // player is always at first index
+        Actor player = this.actors.get(0);
+        // init a blank list
+        ArrayList<Actor> newActors = new ArrayList<>();
+        for (int i = 0; i < this.getMap().getWidth(); i++) {
+            for (int j = 0; j < this.getMap().getHeight(); j++) {
+                Tile tile = this.getMap().getTile(i,j);
+
+                // no actor? keep going
+                if (Objects.isNull(tile.getStanding())) {
+                    continue;
+                }
+
+                Actor standing = tile.getStanding();
+
+                // we insert the player at the head manually
+                if (standing == player) {
+                    continue;
+                }
+
+                // add the standing actors
+                newActors.add(standing);
+            }
+        }
+
+        newActors.add(0, player);
+        this.actors = newActors;
     }
 
     public Actor[] getActors() {
@@ -55,12 +87,16 @@ public class World {
         pillars = Math.round(pillars * 0.07F);
         this.getMap().setBasicCave(1, 1, pillars);
         this.populate(PopulationKind.RANDOM);
+        this.updateActors();
     }
 
     private void populate(PopulationKind pk) {
         switch (pk) {
             case RANDOM:
                 populateRandomlyWithOrcs();
+                break;
+            default:
+                throw new IllegalArgumentException(String.format("%s is not a PopulationKind", pk));
         }
     }
 
@@ -75,7 +111,6 @@ public class World {
             if (toSpawn.isWalkable() && Objects.isNull(toSpawn.getStanding())) {
                 // TODO: Extract into method
                 Orc newOrc = new Orc(x, y, 8, 2);
-                actors.add(newOrc);
                 this.getMap().getTile(x,y).setStanding(newOrc);
             }
         }

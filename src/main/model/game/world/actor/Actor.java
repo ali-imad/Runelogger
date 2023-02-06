@@ -1,6 +1,11 @@
 package model.game.world.actor;
 
 import com.googlecode.lanterna.TextColor;
+import model.game.world.map.tile.Tile;
+
+import static com.googlecode.lanterna.TextColor.ANSI.BLACK;
+import static com.googlecode.lanterna.TextColor.ANSI.MAGENTA;
+import static model.game.world.actor.AttackOutcome.*;
 
 public abstract class Actor {
     private char glyph;
@@ -118,15 +123,22 @@ public abstract class Actor {
         return label;
     }
 
-    public void attack(Actor toAttack) {
-        toAttack.dmg(this.getAtk() - toAttack.getDef());
+    // EFFECTS: Attack whatever is standing on the tile
+    public void attack(Tile t) {
+        Actor toAttack = t.getStanding();
+        AttackOutcome outcome = toAttack.dmg(this.getAtk() - toAttack.getDef());
+        if (outcome == KILL) {
+            // TODO: extract corpse generation to static method
+            t.setStanding(new Corpse(toAttack));
+        }
     }
 
-    public void dmg(int dhp) {
+    public AttackOutcome dmg(int dhp) {
         this.hp -= dhp;
         if (this.hp < 0) {
-            this.glyph = '%';
+            return KILL;
         }
+        return DAMAGE;
     }
 
     public int getAtk() {

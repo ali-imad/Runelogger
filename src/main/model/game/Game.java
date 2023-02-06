@@ -62,6 +62,7 @@ public class Game {
             default:
         }
         this.nextEvent = REST;
+        this.getWorld().updateActors();
     }
 
     public Actor getPlayer() {

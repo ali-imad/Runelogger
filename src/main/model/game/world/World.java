@@ -13,6 +13,7 @@ public class World {
     private ArrayList<Actor> actors;  // list of actors
     private GameMap map;  // presently active tiles
     private Random rng;
+    private ArrayList<String> pending; // pending console messages
 
     public World(Actor player, int w, int h) {
         this.rng = new Random(34972595);
@@ -20,60 +21,47 @@ public class World {
         this.actors = new ArrayList<>();
         this.actors.add(player);
         this.map = new GameMap(w, h);
+        this.pending = new ArrayList<>();
     }
 
     // REQUIRES: actor is in actors
     public void moveActorAndCollide(Actor actor, int dx, int dy) {
-        // TODO: move to Game?
-        int[] newPos = actor.getPos().clone();
-        newPos[0] += dx;
-        newPos[1] += dy;
+        // TODO: move the movement to Actor
+        int newX = actor.getX() + dx;
+        int newY = actor.getY() + dy;
 
-        Tile tileToReach = this.map.getTile(newPos[0], newPos[1]);
+        Tile curr = this.map.getTile(actor.getX(), actor.getY());
+        Tile tileToReach = this.map.getTile(newX, newY);
+        boolean actorExists = !Objects.isNull(tileToReach.getStanding());
 
         if (tileToReach.isWalkable()) {
-            if (Objects.isNull(tileToReach.getStanding())) {
-                this.map.getTile(actor.getX(), actor.getY()).emptyStanding();
-                actor.setPos(newPos);
-                tileToReach.setStanding(actor);
-            } else {
-                actor.attack(tileToReach);
+            curr.setStanding(actor.getUnder());
+            if (!Objects.isNull(actor.getUnder())) {
+                this.pending.add("Left behind  " + actor.getUnder().getLabel());
+            } // else {
+//                this.pending.add("Left behind null");
+//            }
+            actor.setUnder(tileToReach.getStanding());
+
+            if (actorExists) {
+                this.pending.add(String.format("%s moved into %s. (%d, %d)",
+                        actor.getLabel(), tileToReach.getStanding().getLabel(), actor.getX(), actor.getY()));
+                actor.setUnder(tileToReach.getStanding());
             }
+
+            actor.setPos(new int[]{newX, newY});
+            curr.setWalkable(true);
+            tileToReach.setStanding(actor);
+        } else if (actorExists) {
+            this.pending.add(String.format("%s attacks %s! (%d, %d)",
+                    actor.getLabel(), tileToReach.getStanding().getLabel(), actor.getX(), actor.getY()));
+            actor.attack(tileToReach);
+        } else {
+            this.pending.add(String.format("%s was blocked from moving! (%d, %d)",
+                    actor.getLabel(), actor.getX(), actor.getY()));
         }
     }
 
-    // MODIFIES: this.actors
-    // EFFECTS: parse the tilemap and repopulate this.actors
-    public void updateActors() {
-        // player is always at first index
-        Actor player = this.actors.get(0);
-        // init a blank list
-        ArrayList<Actor> newActors = new ArrayList<>();
-        for (int i = 0; i < this.getMap().getWidth(); i++) {
-            for (int j = 0; j < this.getMap().getHeight(); j++) {
-                Tile tile = this.getMap().getTile(i,j);
-
-                // no actor? keep going
-                if (Objects.isNull(tile.getStanding())) {
-                    continue;
-                }
-
-                Actor standing = tile.getStanding();
-                standing.setWorld(this);
-
-                // we insert the player at the head manually
-                if (standing == player) {
-                    continue;
-                }
-
-                // add the standing actors
-                newActors.add(standing);
-            }
-        }
-
-        newActors.add(0, player);
-        this.actors = newActors;
-    }
 
     public Actor[] getActors() {
         return this.actors.toArray(new Actor[this.actors.size()]);
@@ -91,6 +79,10 @@ public class World {
         this.updateActors();
     }
 
+    public GameMap getMap() {
+        return this.map;
+    }
+
     private void populate(PopulationKind pk) {
         switch (pk) {
             case RANDOM:
@@ -99,6 +91,40 @@ public class World {
             default:
                 throw new IllegalArgumentException(String.format("%s is not a PopulationKind", pk));
         }
+    }
+
+    // MODIFIES: this.actors
+    // EFFECTS: parse the tilemap and repopulate this.actors
+    public void updateActors() {
+        // player is always at first index
+        Actor player = this.actors.get(0);
+        // init a blank list
+        ArrayList<Actor> newActors = new ArrayList<>();
+        for (int i = 0; i < this.getMap().getWidth(); i++) {
+            for (int j = 0; j < this.getMap().getHeight(); j++) {
+                Tile tile = this.getMap().getTile(i, j);
+
+                // no actor? keep going
+                if (Objects.isNull(tile.getStanding())) {
+                    continue;
+                }
+
+                Actor standing = tile.getStanding();
+                standing.setWorld(this);
+                tile.setWalkable(!standing.isBlocking());
+
+                // we insert the player at the head manually
+                if (standing == player) {
+                    continue;
+                }
+
+                // add the standing actors
+                newActors.add(standing);
+            }
+        }
+
+        newActors.add(0, player);
+        this.actors = newActors;
     }
 
     private void populateRandomlyWithOrcs() {
@@ -112,12 +138,18 @@ public class World {
             if (toSpawn.isWalkable() && Objects.isNull(toSpawn.getStanding())) {
                 // TODO: Extract into method
                 Orc newOrc = new Orc(x, y, 8, 2);
-                this.getMap().getTile(x,y).setStanding(newOrc);
+                this.getMap().getTile(x, y).setStanding(newOrc);
             }
         }
     }
 
-    public GameMap getMap() {
-        return this.map;
+    public void pushConsole(String newLog) {
+        pending.add(newLog);
+    }
+
+    public String[] getPendingMessagesFromWorld() {
+        String[] pendingArray = this.pending.toArray(new String[0]);
+        this.pending = new ArrayList<>();
+        return pendingArray;
     }
 }

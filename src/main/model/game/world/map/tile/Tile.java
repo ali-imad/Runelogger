@@ -33,6 +33,10 @@ public abstract class Tile {
         return walkable;
     }
 
+    public void setWalkable(boolean walkable) {
+        this.walkable = walkable;
+    }
+
     public char getGlyph() {
         return glyph;
     }

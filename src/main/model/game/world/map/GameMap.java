@@ -132,4 +132,17 @@ public class GameMap {
             }
         }
     }
+
+    // REQUIRES: this.tiles != null
+    // MODIFIES:
+    // EFFECTS: Returns this.tiles as a char[][]
+    public char[][] getTilesAsChars() {
+        char[][] charTiles = new char[getWidth()][getHeight()];
+        for (int i = 0; i < getWidth(); i++) {
+            for (int j = 0; j < getHeight(); j++) {
+                charTiles[i][j] = this.tiles[i][j].getGlyph();
+            }
+        }
+        return charTiles;
+    }
 }

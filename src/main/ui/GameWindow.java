@@ -44,8 +44,8 @@ public class GameWindow {
         game = unattached;
         tc = new SwingTerminalFontConfiguration(false, NOTHING,
 //                new Font(Font.MONOSPACED, Font.PLAIN, 14));  // uncomment in prod
-//                new Font("Consolas", Font.PLAIN, 12));  // windows
-                new Font("Fixedsys Excelsior", Font.PLAIN, 16));
+                new Font("Consolas", Font.PLAIN, 12));  // windows
+//                new Font("Fixedsys Excelsior", Font.PLAIN, 16));
         this.size = new TerminalSize(gameW, gameH);
         this.screen = new DefaultTerminalFactory()
                 .setInitialTerminalSize(this.size)

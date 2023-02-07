@@ -1,5 +1,6 @@
 package model;
 
+import model.game.Game;
 import model.game.world.World;
 import model.game.world.actor.Player;
 import model.game.world.map.tile.Tile;
@@ -18,6 +19,7 @@ class TestWorld {
 
     @BeforeEach
     void runBefore() {
+        Game g = new Game("g", 1, 1);
         Player testPlayer = new Player(0, 0);
         testWorldSmall = new World(testPlayer, 1, 1);
         // simplest map

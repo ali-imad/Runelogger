@@ -28,5 +28,7 @@
       </library>
     </orderEntry>
     <orderEntry type="library" name="lanterna-3.0.3" level="project" />
+    <orderEntry type="library" name="squidlib-3.0.6" level="project" />
+    <orderEntry type="library" name="squidlib-util-3.0.6" level="project" />
   </component>
 </module>

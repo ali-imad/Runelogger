@@ -18,13 +18,17 @@ public class Game {
     public Game(String name, int mapWidth, int mapHeight) {
         this.title = name;
 //        this.player = new Player(  mapWidth / 2, mapHeight / 2);
-        this.player = new Player(mapWidth / 10, mapHeight / 10);
+        this.player = new Player(mapWidth / 10 - 3, mapHeight / 10);
         world = new World(this.player, mapWidth, mapHeight);
         this.nextEvent = REST;
     }
 
     public static boolean isGameIsRunning() {
         return gameIsRunning;
+    }
+
+    public static void killGame() {
+        gameIsRunning = false;
     }
 
     // MODIFIES: this
@@ -63,6 +67,7 @@ public class Game {
         }
         this.nextEvent = REST;
         this.getWorld().updateActors();
+        this.pushPendingMessages();
     }
 
     public Actor getPlayer() {
@@ -73,22 +78,23 @@ public class Game {
         return title;
     }
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     public void processInput(char key) {
         switch (key) {
             case ('h'):
-                this.pushConsole("Move Left");
+//                this.getWorld().pushConsole("Move Left");
                 this.nextEvent = MOVE_LEFT;
                 break;
             case ('j'):
-                this.pushConsole("Move Down");
+//                this.getWorld().pushConsole("Move Down");
                 this.nextEvent = MOVE_DOWN;
                 break;
             case ('k'):
-                this.pushConsole("Move Up");
+//                this.getWorld().pushConsole("Move Up");
                 this.nextEvent = MOVE_UP;
                 break;
             case ('l'):
-                this.pushConsole("Move Right");
+//                this.getWorld().pushConsole("Move Right");
                 this.nextEvent = MOVE_RIGHT;
                 break;
             case ('v'):
@@ -108,12 +114,11 @@ public class Game {
         }
     }
 
-    public static void killGame() {
-        gameIsRunning = false;
-    }
-
-    public void pushConsole(String newLog) {
-        console.add(newLog);
+    public void pushPendingMessages() {
+        String[] pending = this.getWorld().getPendingMessagesFromWorld();
+        for (String s : pending) {
+            console.add(s);
+        }
     }
 
     public void buildConsole(int lines, int lineWidth) {

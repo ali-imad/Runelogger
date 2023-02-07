@@ -4,13 +4,12 @@ import com.googlecode.lanterna.TextColor;
 import model.game.world.World;
 import model.game.world.map.tile.Tile;
 
-import static com.googlecode.lanterna.TextColor.ANSI.BLACK;
-import static com.googlecode.lanterna.TextColor.ANSI.MAGENTA;
-import static model.game.world.actor.AttackOutcome.*;
+import static model.game.world.actor.AttackOutcome.DAMAGE;
+import static model.game.world.actor.AttackOutcome.KILL;
 
 public abstract class Actor {
-    private char glyph;
     private final String label;
+    private char glyph;
     private int[] pos;
     private World world;
 
@@ -24,6 +23,8 @@ public abstract class Actor {
 
     private int atk;
     private int def;
+    private boolean blocking; // blocks movement
+    private Actor under; // actor under actor, if they exist
 
     // TODO: convert to builder
     public Actor(char glyph, String name, int x, int y, TextColor fgColor,
@@ -39,6 +40,23 @@ public abstract class Actor {
         this.maxMP = mmp;
         this.hp = mhp;
         this.mp = mmp;
+        this.blocking = true;  // should be explictly disabled by changeBlocking
+    }
+
+    public Actor getUnder() {
+        return under;
+    }
+
+    public void setUnder(Actor under) {
+        this.under = under;
+    }
+
+    public boolean isBlocking() {
+        return blocking;
+    }
+
+    protected void setBlocking(boolean b) {
+        this.blocking = b;
     }
 
     public TextColor getFgColor() {
@@ -132,7 +150,6 @@ public abstract class Actor {
         if (outcome == KILL) {
             // TODO: extract corpse generation to static method
             t.setStanding(new Corpse(toAttack));
-        } else {
         }
     }
 

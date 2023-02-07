@@ -59,6 +59,7 @@ public class World {
                 }
 
                 Actor standing = tile.getStanding();
+                standing.setWorld(this);
 
                 // we insert the player at the head manually
                 if (standing == player) {

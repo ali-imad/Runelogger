@@ -1,6 +1,7 @@
 package model.game.world.actor;
 
 import com.googlecode.lanterna.TextColor;
+import model.game.world.World;
 import model.game.world.map.tile.Tile;
 
 import static com.googlecode.lanterna.TextColor.ANSI.BLACK;
@@ -11,6 +12,7 @@ public abstract class Actor {
     private char glyph;
     private final String label;
     private int[] pos;
+    private World world;
 
     private TextColor fgColor;  // TODO: add overload constructors
     private TextColor bgColor;
@@ -130,6 +132,7 @@ public abstract class Actor {
         if (outcome == KILL) {
             // TODO: extract corpse generation to static method
             t.setStanding(new Corpse(toAttack));
+        } else {
         }
     }
 
@@ -155,5 +158,13 @@ public abstract class Actor {
 
     public void setDef(int def) {
         this.def = def;
+    }
+
+    public World getWorld() {
+        return world;
+    }
+
+    public void setWorld(World world) {
+        this.world = world;
     }
 }

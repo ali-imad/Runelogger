@@ -149,6 +149,7 @@ public class MainWindow {
         return parseInputFromChoice(valid);
     }
 
+    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void displayStartMenu() {
         System.out.printf("Welcome to the OSRS Boss Log!%n");
         System.out.println("Please select from the following options:");

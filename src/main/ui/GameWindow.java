@@ -1,249 +1,249 @@
 package ui;
 
-import com.googlecode.lanterna.TerminalPosition;
-import com.googlecode.lanterna.TerminalSize;
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.input.KeyStroke;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.swing.SwingTerminalFontConfiguration;
-import model.game.Game;
-import model.game.world.actor.Actor;
-import model.game.world.map.GameMap;
-import model.game.world.map.tile.Tile;
+import model.Game;
+import model.actor.Stats;
+import model.item.Item;
+import model.actor.Player;
 
-import java.awt.*;
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
-import static com.googlecode.lanterna.TextColor.ANSI;
-import static com.googlecode.lanterna.terminal.swing.AWTTerminalFontConfiguration.BoldMode.NOTHING;
-import static java.lang.Math.max;
-import static java.lang.Math.min;
-
-// TODO: split up GameWindow into more abstract classes
-
+/*
+    Class responsible for generating the game view
+ */
 public class GameWindow {
-    private static final int CONSOLE_PAD_X = 2;
-    private static final int CONSOLE_PAD_Y = 1;
-    private static final int MAP_PAD_X = 2;
-    private static final int MAP_PAD_Y = 1;
     private static Game game;
-    // the next two views are static, and thus we should never need to reconstruct them
-    private static ScreenView consoleView;
-    private static ScreenView statusView;
-    private static StatusBar healthBar;
-    private static StatusBar manaBar;
-    private final Screen screen;
-    private final TerminalSize size;
-    // view for the viewport mapped to the game map
-    private ScreenView gameView;
+    private static Scanner input;
+    private static Player player;
 
-    public GameWindow(int gameW, int gameH, int viewW, int viewH, Game unattached) throws IOException {
-        SwingTerminalFontConfiguration tc;
-        game = unattached;
-        tc = new SwingTerminalFontConfiguration(false, NOTHING,
-//                new Font(Font.MONOSPACED, Font.PLAIN, 14));  // uncomment in prod
-                new Font("Consolas", Font.PLAIN, 12));  // windows
-//                new Font("Fixedsys Excelsior", Font.PLAIN, 16));
-        this.size = new TerminalSize(gameW, gameH);
-        this.screen = new DefaultTerminalFactory()
-                .setInitialTerminalSize(this.size)
-                .setTerminalEmulatorTitle(game.getTitle())
-                .setTerminalEmulatorFontConfiguration(tc)
-                .createScreen();
-        this.gameView = new ScreenView(MAP_PAD_X, MAP_PAD_Y, viewW - MAP_PAD_X, viewH - MAP_PAD_Y);
-
-        statusView = new ScreenView(viewW, 0, gameW - viewW, viewH);
-        consoleView = new ScreenView(CONSOLE_PAD_X, viewH + CONSOLE_PAD_Y,
-                gameW - CONSOLE_PAD_X, gameH - viewH - CONSOLE_PAD_Y);
-        // *2 because padding is on both sides
-        game.buildConsole(consoleView.height - CONSOLE_PAD_Y * 2, consoleView.width - CONSOLE_PAD_X * 2);
-
-        healthBar = new StatusBar(game.getPlayer().getMaxHP(), ANSI.RED, "Health");
-        manaBar = new StatusBar(game.getPlayer().getMaxMP(), ANSI.YELLOW, "Rage");
+    // EFFECTS: Create a GameWindow to render and input handle the Game
+    public GameWindow(Game g) {
+        game = g;
+        input = new Scanner(System.in);
+        input.useDelimiter("\n"); // parse input with enter
     }
 
-    public void run() throws IOException {
-        // start lanterna
-        this.screen.startScreen();
+    // EFFECTS: Start the game, initializing and running the game loop as necessary
+    public void start() {
 
-        // hide the cursor
-        this.screen.setCursorPosition(null);
-        while (Game.isGameIsRunning()) {
-            // show new game state
-            this.render();
-            // get player input
-            this.handleInput();
-            // let the game respond to that and form a new state
-            game.run();
+        // if they choose to play the game, we run the game loop and respond to events
+        while (Game.isRunning()) {
+            renderGameState();
         }
-
-        // kill lanterna
-        this.screen.stopScreen();
-
-        System.exit(0);
     }
 
-    private void render() throws IOException {
-        // clear the old screen
-        screen.clear();
-
-        // set game viewport based on actor position
-        this.clampViewToActor();
-
-        // draw to screen
-        this.renderGameMap();    // refresh the new screen
-        this.renderLogWindow();  // bottom part of the screen
-        this.renderStatusWindow();  // right side of the screen
-
-        screen.refresh();
+    // EFFECTS: Render the game appropriately depending on what's going on in the game
+    private void renderGameState() {
+        switch (Game.getState()) {
+            case INIT:
+                // start the game, the client can only make a new game or quit
+                displayStartMenu();
+                return;
+            case EXIT_GAME:
+                endGame();
+                return;
+            case CAMPFIRE:
+                displayCampfireMenu();
+                return;
+            case SELL:
+                displayBackpack();
+                displayGrinderMenu();
+            default:
+                return;
+        }
     }
 
-    private void handleInput() throws IOException {
-        KeyStroke key = screen.readInput();
-        if (key == null) {
+    // REQUIRES: player.items.capacity < 255
+    private void displayGrinderMenu() {
+        System.out.println("Which item would you like to grind for gold?");
+        Item[] items = player.getBag().getItems();
+        List<MenuOption> optionsList = new ArrayList<>();
+        for (int i = 0; i < items.length; i++) {
+            optionsList.add(new MenuOption((char) (i + '0'), items[i].renderString()));
+        }
+        optionsList.add(new MenuOption('c', "Go back to the campfire"));
+        char choice = parseAndDisplayOptions(optionsList.toArray(new MenuOption[0]));
+        if (choice == 'c') {
+            game.goToCampfire();
             return;
         }
-        if (key.getCharacter() != null) {
-            game.processInput(key.getCharacter());
-        } else if (key.getKeyType() != null) {
-            game.processInput(key.getKeyType());
-        }
+
+        int choiceIdx = Character.getNumericValue(choice);
+        Item itemChoice = items[choiceIdx];
+
+        displaySellItemsMenu(itemChoice);
     }
 
-    private void clampViewToActor() {
-        // clamp to the left
-        int minViewX = max(0, game.getPlayer().getX() - this.gameView.width / 2);
-        // clamp that result to the right (it will preserve the old one if its being used)
-        int newViewX = min(game.getWorld().getMap().getWidth() - this.gameView.width, minViewX);
-
-        // do the same thing to y
-        // clamp to the top if needed
-        int minViewY = max(0, game.getPlayer().getY() - this.gameView.height / 2);
-        // clamp that result to the bottom
-        int newViewY = min(game.getWorld().getMap().getHeight() - this.gameView.height, minViewY);
-        this.gameView = new ScreenView(newViewX, newViewY, this.gameView.width, this.gameView.height);
+    private void displaySellItemsMenu(Item choice) {
+        System.out.printf("How many of %s would you like to sell? ($%d each, max %d)\t",
+                choice.getName(),
+                choice.getValue(),
+                choice.getQuantity());
+        int amount = parseQuantity(choice.getQuantity());
+        game.sendSellAction(choice, amount);
     }
 
-    private void renderGameMap() {
-        this.drawTileMap();
-        this.drawEntities();
-        this.drawActors();
-    }
-
-    // REQUIRES: game.console to exist
-    // MODIFIES: screen
-    // EFFECTS: prints out the console messages to the screen
-    private void renderLogWindow() {
-        int startY = consoleView.getY1();
-        String[] log = game.getConsole();
-        int endY = min(startY + log.length, consoleView.getY2());
-        int i = 0;
-        for (int y = startY; y < endY; y++) {
-            TextGraphics msg = screen.newTextGraphics();
-            TerminalPosition pos = new TerminalPosition(consoleView.getX1(), y);
-            msg.setForegroundColor(ANSI.CYAN);
-            msg.putString(pos, log[i]);
-            i++;
-        }
-    }
-
-    private void renderStatusWindow() {
-        this.updateStatusBars();
-        final int WINDOW_PAD_Y = 2;
-        final int WINDOW_PAD_X = 2;
-        final int LABEL_PAD_Y = 2;
-        final int LABEL_PAD_X = 0;
-        final int Y_SPACING_BETWEEN = 4;
-        final char BAR_CHAR = '#';
-
-        int startX = statusView.getX1() + WINDOW_PAD_X;
-        int maxWidth = statusView.getX2() - startX - WINDOW_PAD_X;
-        int startY = statusView.getY1() + WINDOW_PAD_Y;
-//        int endY = statusView.getY2() - WINDOW_PAD_Y;
-
-        StatusBar[] bars = new StatusBar[]{
-                healthBar,
-                manaBar,
-        };
-
-        renderBarsWithLabels(bars, BAR_CHAR, Y_SPACING_BETWEEN, maxWidth, LABEL_PAD_X, LABEL_PAD_Y, startX, startY);
-    }
-
-    private void drawTileMap() {
-        clampViewToActor();
-
-        GameMap tilemap = game.getWorld().getMap();
-        for (int i = this.gameView.x; i < this.gameView.x + this.gameView.width; i++) {
-            for (int j = this.gameView.y; j < this.gameView.y + this.gameView.height; j++) {
-                int terminalX = i - this.gameView.x + MAP_PAD_X;
-                int terminalY = j - this.gameView.y + MAP_PAD_Y;
-                Tile tile = tilemap.getTile(i, j);
-                screen.setCharacter(new TerminalPosition(terminalX, terminalY), tile.toTC());
-            }
-        }
-
-    }
-
-    private void drawEntities() {
-    }
-
-    private void drawActors() {
-        for (Actor a : game.getWorld().getActors()) {
-            TerminalPosition pos = new TerminalPosition(a.getX(), a.getY());
-            int actorX = pos.getColumn();
-            int actorY = pos.getRow();
-            if (gameView.x <= actorX && actorX <= gameView.x + gameView.width) {
-                if (gameView.y <= actorY && actorY <= gameView.y + gameView.height) {
-                    int terminalX = actorX - this.gameView.x + MAP_PAD_X;
-                    int terminalY = actorY - this.gameView.y + MAP_PAD_Y;
-                    TextCharacter tc = new TextCharacter(a.getGlyph(), a.getFgColor(), a.getBgColor());
-                    screen.setCharacter(new TerminalPosition(terminalX, terminalY), tc);
+    private int parseQuantity(int max) {
+        String in;
+        do {
+            in = input.next();
+            if (in.isEmpty()) {
+                return 0;
+            } else if (in.matches("[0-9]+")) {
+                int inInt = Integer.parseInt(in);
+                if (inInt <= max) {
+                    return inInt;
                 }
             }
+            System.out.println("Please enter a valid number.");
+        }
+        while (true);
+    }
+
+    private void displayGameShop() {
+
+    }
+
+    private void displayBackpack() {
+        System.out.printf("%s's backpack\t\t$%d%n================%n", player.getName(), player.getBag().getGold());
+        for (Item i : player.getBag().getItems()) {
+            System.out.println(i.renderString());
         }
     }
-
-    // EFFECTS: Updates the status bars with appropriate values
-    private void updateStatusBars() {
-        // set health
-        healthBar.setMaxValue(game.getPlayer().getMaxHP());
-        healthBar.setCurrentValue(game.getPlayer().getHP());
-
-        // set mana
-        manaBar.setMaxValue(game.getPlayer().getMaxMP());
-        manaBar.setCurrentValue(game.getPlayer().getMP());
-    }
-
-    private void renderBarsWithLabels(StatusBar[] bars, char c, int btwn, int w, int padX, int padY, int x0, int y0) {
-        for (StatusBar b : bars) {
-            int x = x0;
-            // render the label
-            TextGraphics label = screen.newTextGraphics();
-            TerminalPosition labelPos = new TerminalPosition(x, y0);
-
-            label.setForegroundColor(b.getColor());
-//            label.putString(labelPos, b.getLabel());
-            label.putString(labelPos, String.format("%s: %d / %d", b.getLabel(), b.getCurrentValue(), b.getMaxValue()));
-
-            x += padX;
-            y0 += padY;
-
-            float percent = Float.min(1.0F, ((float) b.getCurrentValue() / (float) b.getMaxValue()));
-
-//            game.pushConsole(String.valueOf(endX - x0));
-//            game.pushConsole(String.valueOf(percent));
-            int endX = Math.round((x0 + (w * percent)));
-//            game.pushConsole(String.valueOf(endX - x0));
-
-            // render the bar
-            for (int i = x; i < endX; i++) {
-                TextCharacter tc = new TextCharacter(c, b.getColor(), ANSI.BLACK);
-                screen.setCharacter(new TerminalPosition(i, y0), tc);
+    private void displayEquippables() {
+        System.out.printf("%s's stored equippables\t\t$%d%n================%n", player.getName(), player.getBag().getGold());
+        for (Item i : player.getBag().getItems()) {
+            if (i.isEquippable()) {
+                System.out.println(i.renderString());
             }
-
-            y0 += btwn;
         }
     }
+
+    private void displayCampfireMenu() {
+
+        System.out.println("Please select from the following options:");
+        MenuOption[] options = {
+                new MenuOption('a', "Go out on an adventure"),
+                new MenuOption('b', "Switch out equipment"),
+                new MenuOption('k', "View your stats"),
+//                new MenuOption('s', "Go to the store"),
+                new MenuOption('r', "Sleep until tomorrow"),
+                new MenuOption('g', "Grind items for gold"),
+                new MenuOption('q', "Quit game")
+        };
+
+        char choice = parseAndDisplayOptions(options);
+
+        switch (choice) {
+            case 'a':
+                game.goOnAdventure();
+                return;
+            case 'b':
+                displayBackpack();
+                return;
+            case 'r':
+                game.goToBed();
+                return;
+            case 'k':
+                displayPlayerStats();
+                return;
+//            case 's':
+//                game.goToShop();
+//                return;
+            case 'g':
+                game.goToGrinder();
+                return;
+            case 'q':
+                endGame();
+                break;
+            default:
+                System.out.println("That wasn't supposed to happen!");
+                displayStartMenu();
+        }
+    }
+
+    // EFFECTS: Returns a choice based on the passed menu options
+    private char parseAndDisplayOptions(MenuOption[] startOptions) {
+        List<Character> valid = new ArrayList<>();
+
+        for (MenuOption m : startOptions) {
+            System.out.printf("%s - %s\t", m.getButton(), m.getDescription());
+            valid.add(m.getButton());
+        }
+
+        return parseInputFromChoice(valid);
+    }
+
+    private void displayStartMenu() {
+        System.out.printf("Welcome to %s, adventure awaits!%n", Game.getTitle());
+        System.out.println("Please select from the following options:");
+        MenuOption[] startOptions = {
+                new MenuOption('n', "New Game"),
+                new MenuOption('q', "Quit Game")
+        };
+
+        switch (parseAndDisplayOptions(startOptions)) {
+            case 'n':
+                initializeNewGame();
+                return;
+            case 'q':
+                endGame();
+                break;
+            default:
+                System.out.println("That wasn't supposed to happen!");
+                displayStartMenu();
+        }
+    }
+
+    private void initializeNewGame() {
+        System.out.println("Let's generate a warrior for you to play!");
+        game.createPlayer(parseStringFromField("What's your name?"));
+
+        player = Game.getPlayer();
+        game.goToCampfire();
+    }
+
+    private void displayPlayerStats() {
+        System.out.printf("Hello %s!%n", player.getName());
+        System.out.printf("You are a %d level warrior with %d exp left to level up.%n", player.getLevel(), 0);
+
+        System.out.println("========= STATS =========");
+        System.out.printf("|| HP  ||\t\t %d (%d)%n", player.getTotalStat(Stats.HP), player.getStats().getMhp());
+        System.out.printf("|| MP  ||\t\t %d (%d)%n", player.getTotalStat(Stats.MP), player.getStats().getMmp());
+        System.out.printf("|| ATK ||\t\t %d (%d)%n", player.getTotalStat(Stats.ATK), player.getStats().getAtk());
+        System.out.printf("|| STR ||\t\t %d (%d)%n", player.getTotalStat(Stats.WIS), player.getStats().getAtk());
+        System.out.printf("|| DEF ||\t\t %d (%d)%n", player.getTotalStat(Stats.DEF), player.getStats().getAtk());
+        System.out.println("=========================");
+    }
+
+    private String parseStringFromField(String field) {
+        String inputString;
+        do {
+            System.out.printf(field + ": \t");
+            inputString = input.next();
+        } while (!(inputString.length() > 0));
+        return inputString;
+    }
+
+    private void endGame() {
+        System.out.println("Goodbye!");
+        game.kill();
+    }
+
+    private char parseInputFromChoice(List<Character> valid) {
+        System.out.println();
+        boolean decided = false;
+        String decision = input.next();
+        while (!decided) {
+            if (decision.length() != 1 || !valid.contains(decision.toCharArray()[0])) {
+                System.out.println("You did not select a valid option.");
+                decision = input.next();
+            } else {
+                decided = true;
+            }
+        }
+        return decision.toCharArray()[0];
+    }
+
 }

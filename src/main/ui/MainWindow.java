@@ -15,12 +15,12 @@ import static ui.RenderState.MENU;
     Class responsible for generating the game view
  */
 public class MainWindow {
-    private static BossLog log;
-    private static Scanner input;
-    private static boolean isRunning = true;
-    private static RenderState state;
+    private static BossLog log; // model to attach
+    private static Scanner input; // input handler
+    private static boolean isRunning = true;  // determines if we should render a view or exit
+    private static RenderState state;  // the state of the application. determines what should be rendered
 
-    // EFFECTS: Create a MainWindow to render and input handle the Game
+    // EFFECTS: Create a MainWindow to render and input handle the BossLog
     public MainWindow(BossLog l) {
         log = l;
         input = new Scanner(System.in);
@@ -28,16 +28,17 @@ public class MainWindow {
         state = MENU;
     }
 
-    // EFFECTS: Start the game, initializing and running the game loop as necessary
+    // EFFECTS: Start the application, initializing and running the main loop as necessary
     public void start() {
-        // if they choose to play the game, we run the game loop and respond to events
         while (isRunning) {
             renderLogState();
         }
+        // exit once it is finished running
         System.exit(0);
     }
 
-    // EFFECTS: Render the game appropriately depending on what's going on in the game
+    // MODIFIES: System.out
+    // EFFECTS: Render the application and generate an appropriate view depending on its state
     private void renderLogState() {
         switch (state) {
             case MENU:
@@ -59,9 +60,12 @@ public class MainWindow {
             case NEW_ENTRY:
                 displayNewEntryView();
             default:
+                throw new RuntimeException("No valid state provided");
         }
     }
 
+    // MODIFIES: log, state
+    // EFFECTS: Parse and remove an entry from the boss log
     private void displayRemoveMenu() {
         System.out.printf("Which entry did you want to remove? (max idx: %s)%n", log.getTotalKills() - 1);
         int entryIdx = parseQuantity(log.getTotalKills() - 1);
@@ -69,6 +73,8 @@ public class MainWindow {
         state = MENU;
     }
 
+    // MODIFIES: log, state
+    // EFFECTS: Parse and add a new KillEntry to log
     private void displayNewEntryView() {
         System.out.println("Lets log a new entry!");
 
@@ -88,6 +94,7 @@ public class MainWindow {
         System.out.printf("Entry #%d logged!%n", log.getTotalKills());
     }
 
+    // EFFECTS: Returns an integer corresponding to the index of the boss in log.bosses
     private Integer getBossChoice() {
         List<MenuOption> optionsList = new ArrayList<>();
         for (int i = 0; i < log.getBosses().length; i++) {
@@ -104,7 +111,7 @@ public class MainWindow {
         return Character.getNumericValue(choice);
     }
 
-    // REQUIRES: log.kills.size() > x
+    // EFFECTS: Show the most recent x KillEntry's logged, or all if x > log.kills.size()
     private void displayLastXEntries(int x) {
         x = Math.min(log.getTotalKills(), x);
         System.out.printf("Here are the last %d kills.%n", x);
@@ -116,6 +123,7 @@ public class MainWindow {
         state = MENU;
     }
 
+    // EFFECTS: Display all bosses and ask for input to show detailed boss information
     private void displayBosses() {
         System.out.println("Which boss would you like to view?");
         Integer bossIdx = getBossChoice();
@@ -126,18 +134,17 @@ public class MainWindow {
         displayBoss(toView);
     }
 
+    // EFFECTS: Parse and show detailed information about a specific boss in log
     private void displayBoss(Boss toView) {
         System.out.printf("%s -- Kills: %d -- Avg kill time: %d -- Avg kill value $%d%n",
                 toView.getName(), toView.getKillCount(), toView.getAvgTime(), toView.getAvgValue());
     }
 
+    // EFFECTS: Parse soem number input by the character, up to max. Will not return until the input is valid
     private int parseQuantity(int max) {
-        String in;
+        String in = input.next();
         do {
-            in = input.next();
-            if (in.isEmpty()) {
-                return 0;
-            } else if (in.matches("[0-9]+")) {
+            if (in.matches("[0-9]+")) {
                 int inInt = Integer.parseInt(in);
                 if (inInt <= max) {
                     return inInt;
@@ -160,6 +167,8 @@ public class MainWindow {
         return parseInputFromChoice(valid);
     }
 
+    // MODIFIES: state
+    // EFFECTS: the main menu for the application. This sets state for future views
     @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void displayStartMenu() {
         System.out.printf("Welcome to the OSRS Boss Log!%n");

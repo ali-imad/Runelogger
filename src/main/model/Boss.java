@@ -7,10 +7,10 @@ import java.util.ArrayList;
     stores references to all of their logged kills with appropriate stats.
  */
 public class Boss {
-    private int averageKillValue;
-    private final ArrayList<KillEntry> kills;
-    private int averageTimeToKill;
-    private final String name;
+    private int averageKillValue;  // average value of loot dropped by killing this boss
+    private int averageTimeToKill;  //  average time to kill, in seconds
+    private final ArrayList<KillEntry> kills;  // KillEntry's corresponding to this boss
+    private final String name; // name of the boss
 
     // EFFECTS: Generate a Boss object to store KillEntry's and appopriate stats.
     //          Fields are initialized to 0 indicating no entries.
@@ -21,6 +21,7 @@ public class Boss {
         this.kills = new ArrayList<>();
     }
 
+    // EFFECTS: Return the name of the boss as a String
     public String getName() {
         return name;
     }

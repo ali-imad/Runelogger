@@ -18,8 +18,8 @@ class TestBossLog {
     void testInitialValuesAreEmpty() {
         for (Boss b : testLog.getBosses()) {
             assertEquals(0, b.getKillCount());
-            assertEquals(-1, b.getAvgValue());
-            assertEquals(-1, b.getAvgTime());
+            assertEquals(0, b.getAvgValue());
+            assertEquals(0, b.getAvgTime());
         }
     }
 
@@ -56,6 +56,22 @@ class TestBossLog {
             assertEquals(testValue, testLog.getBosses()[testBossIdx].getAvgValue());
             assertEquals(testTime, testLog.getBosses()[testBossIdx].getAvgTime());
         }
+    }
+
+    @Test
+    void testAddMultipleOfSameBossDifferentValues() {
+        int testBossIdx = 0;
+        int testTime = 3000;
+        int testValue = 3000;
+
+        testLog.addNewEntry(testBossIdx, testTime, testValue);
+        assertEquals(testValue, testLog.getBosses()[testBossIdx].getAvgValue());
+        assertEquals(testTime, testLog.getBosses()[testBossIdx].getAvgTime());
+
+        // ensure averages update properly
+        testLog.addNewEntry(testBossIdx, testTime*3, testValue*3);
+        assertEquals(2*testValue, testLog.getBosses()[testBossIdx].getAvgValue());
+        assertEquals(2*testTime, testLog.getBosses()[testBossIdx].getAvgTime());
     }
 
     @Test

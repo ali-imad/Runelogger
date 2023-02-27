@@ -59,6 +59,7 @@ public class MainWindow {
                 return;
             case NEW_ENTRY:
                 displayNewEntryView();
+                return;
             default:
                 throw new RuntimeException("No valid state provided");
         }
@@ -92,6 +93,7 @@ public class MainWindow {
 
         log.addNewEntry(bossIdx, timeToKill, killValue);
         System.out.printf("Entry #%d logged!%n", log.getTotalKills());
+        state = MENU;
     }
 
     // EFFECTS: Returns an integer corresponding to the index of the boss in log.bosses
@@ -151,6 +153,7 @@ public class MainWindow {
                 }
             }
             System.out.println("Please enter a valid number.");
+            in = input.next();
         } while (true);
 
     }

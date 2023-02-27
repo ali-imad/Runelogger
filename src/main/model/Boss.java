@@ -63,11 +63,13 @@ public class Boss {
         return averageKillValue;
     }
 
+    // REQUIRES: this.kills.contain(entry)
     // EFFECTS: Return the average value of a kill with this boss. Throws if no such entry exists
     public void removeEntry(KillEntry entry) {
-        if (!this.kills.contains(entry)) {
-            throw new RuntimeException("No such Entry for this boss!");
-        }
+        // TODO: Remove REQUIRES and test the throw
+//        if (!this.kills.contains(entry)) {
+//            throw new RuntimeException("No such Entry for this boss!");
+//        }
         this.kills.remove(entry);
     }
 }

@@ -95,4 +95,9 @@ class TestBossLog {
         assertNotEquals(last, testLog.getFromEnd(0));
     }
 
+//    @Test
+//    void testRemoveEntryThatDoesntExist() {
+//        assertThrows(, testLog.removeEntry(1283));
+//    }
+//
 }

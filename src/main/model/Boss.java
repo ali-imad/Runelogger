@@ -47,4 +47,8 @@ public class Boss {
     public int getAvgValue() {
         return averageKillValue;
     }
+
+    public void removeEntry(KillEntry entry) {
+        this.kills.remove(entry);
+    }
 }

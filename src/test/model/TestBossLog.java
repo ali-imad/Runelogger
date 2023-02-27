@@ -3,7 +3,7 @@ package model;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class TestBossLog {
     private BossLog testLog;
@@ -21,6 +21,16 @@ class TestBossLog {
             assertEquals(-1, b.getAvgValue());
             assertEquals(-1, b.getAvgTime());
         }
+    }
+
+    @Test
+    void testStartingBossesAreInCorrectSpot() {
+        Boss vorkath = testLog.getBosses()[0];
+        Boss mole = testLog.getBosses()[1];
+        Boss zulrah = testLog.getBosses()[2];
+        assertTrue(vorkath.getName().matches("Vorkath"));
+        assertTrue(mole.getName().matches("Giant Mole"));
+        assertTrue(zulrah.getName().matches("Zulrah"));
     }
 
     @Test
@@ -46,6 +56,27 @@ class TestBossLog {
             assertEquals(testValue, testLog.getBosses()[testBossIdx].getAvgValue());
             assertEquals(testTime, testLog.getBosses()[testBossIdx].getAvgTime());
         }
+    }
+
+    @Test
+    void testRemoveEntry() {
+        testAddMultipleOfSameEntry();
+
+        KillEntry first = testLog.getEntry(0);
+
+        assertEquals(first, testLog.getEntry(0));
+
+        // remove first entry
+        testLog.removeEntry(0);
+
+        assertNotEquals(first, testLog.getEntry(0));
+
+        // remove last entry
+        testLog.addNewEntry(1, 123, 1234);
+        KillEntry last = testLog.getFromEnd(0);
+        assertEquals(last, testLog.getEntry(testLog.getTotalKills() - 1));
+        testLog.removeEntry(testLog.getTotalKills() - 1);
+        assertNotEquals(last, testLog.getFromEnd(0));
     }
 
 }

@@ -3,6 +3,7 @@ package ui;
 import model.BossLog;
 
 public class Main {
+    // EFFECTS: Initialize and start rendering the boss log application, adding in some sample entries
     public static void main(String[] args) {
         BossLog log = new BossLog();
 

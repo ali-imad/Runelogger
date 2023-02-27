@@ -101,8 +101,7 @@ public class MainWindow {
             return null;
         }
 
-        int bossIdx = Character.getNumericValue(choice);
-        return bossIdx;
+        return Character.getNumericValue(choice);
     }
 
     // REQUIRES: log.kills.size() > x
@@ -110,7 +109,7 @@ public class MainWindow {
         x = Math.min(log.getTotalKills(), x);
         System.out.printf("Here are the last %d kills.%n", x);
         for (int i = 0; i < x; i++) {
-            KillEntry entryToRender = log.getMostRecent(i);
+            KillEntry entryToRender = log.getFromEnd(i);
             System.out.printf("Kill #%d: BOSS - %s TIME - %d VALUE - %d%n", log.getTotalKills() - i,
                     entryToRender.getBoss().getName(), entryToRender.getTime(), entryToRender.getValue());
         }

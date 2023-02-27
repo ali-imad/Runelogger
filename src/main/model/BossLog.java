@@ -25,6 +25,9 @@ public class BossLog {
 //        this.kills.add(newEntry);
 //    }
 
+    // REQUIRES: this.kills.size() < i
+    // MODIFIES: this.boss.get(i), this.kills
+    // EFFECTS: Generate and add a new entry to the BossLog, updating the appropriate boss
     public void addNewEntry(int bossIdx, int time, int value) {
         Boss boss = this.bosses.get(bossIdx);
         KillEntry newEntry = new KillEntry(boss, time, value);
@@ -40,13 +43,16 @@ public class BossLog {
         return this.kills.get(x);
     }
 
+    // REQUIRES: this.kills.size() < i
+    // MODIFIES: this.boss.get(i), this.kills
+    // EFFECTS: Remove an entry from the BossLog
     public void removeEntry(int i) {
         KillEntry entry = getEntry(i);
         entry.getBoss().removeEntry(entry);
         this.kills.remove(entry);
     }
 
-    public KillEntry getMostRecent(int x) {
+    public KillEntry getFromEnd(int x) {
         return this.kills.get(this.kills.size() - 1 - x);
     }
 

@@ -169,7 +169,6 @@ public class MainWindow {
 
     // MODIFIES: state
     // EFFECTS: the main menu for the application. This sets state for future views
-    @SuppressWarnings({"checkstyle:MethodLength", "checkstyle:SuppressWarnings"})
     private void displayStartMenu() {
         System.out.printf("Welcome to the OSRS Boss Log!%n");
         System.out.println("Please select from the following options:");
@@ -180,8 +179,16 @@ public class MainWindow {
                 new MenuOption('p', "View last 5 entries"),
                 new MenuOption('q', "Quit Game")
         };
+        
+        char choice = parseAndDisplayOptions(startOptions);
 
-        switch (parseAndDisplayOptions(startOptions)) {
+        setNewStateFromMenu(choice);
+    }
+
+    // REQUIRES: state == MENU
+    // EFFECTS: Change the state depending on what was chosen in the main menu screen
+    private void setNewStateFromMenu(char choice) {
+        switch (choice) {
             case 'n':
                 state = NEW_ENTRY;
                 return;

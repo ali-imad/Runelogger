@@ -1,8 +1,6 @@
 package model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Stack;
 
 public class BossLog {
     ArrayList<Boss> bosses;
@@ -40,6 +38,12 @@ public class BossLog {
 
     public KillEntry getEntry(int x) {
         return this.kills.get(x);
+    }
+
+    public void removeEntry(int i) {
+        KillEntry entry = getEntry(i);
+        entry.getBoss().removeEntry(entry);
+        this.kills.remove(entry);
     }
 
     public KillEntry getMostRecent(int x) {

@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import static ui.RenderState.*;
 import static ui.RenderState.MENU;
 
 /*
@@ -31,13 +32,13 @@ public class MainWindow {
     public void start() {
         // if they choose to play the game, we run the game loop and respond to events
         while (isRunning) {
-            renderGameState();
+            renderLogState();
         }
         System.exit(0);
     }
 
     // EFFECTS: Render the game appropriately depending on what's going on in the game
-    private void renderGameState() {
+    private void renderLogState() {
         switch (state) {
             case MENU:
                 // start the log and send to other menus
@@ -45,6 +46,9 @@ public class MainWindow {
                 return;
             case EXIT:
                 exitBossLog();
+                return;
+            case REMOVE:
+                displayRemoveMenu();
                 return;
             case BOSS_VIEW:
                 displayBosses();
@@ -56,6 +60,13 @@ public class MainWindow {
                 displayNewEntryView();
             default:
         }
+    }
+
+    private void displayRemoveMenu() {
+        System.out.printf("Which entry did you want to remove? (max idx: %s)%n", log.getTotalKills() - 1);
+        int entryIdx = parseQuantity(log.getTotalKills() - 1);
+        log.removeEntry(entryIdx);
+        state = MENU;
     }
 
     private void displayNewEntryView() {
@@ -96,6 +107,7 @@ public class MainWindow {
 
     // REQUIRES: log.kills.size() > x
     private void displayLastXEntries(int x) {
+        x = Math.min(log.getTotalKills(), x);
         System.out.printf("Here are the last %d kills.%n", x);
         for (int i = 0; i < x; i++) {
             KillEntry entryToRender = log.getMostRecent(i);
@@ -155,6 +167,7 @@ public class MainWindow {
         System.out.println("Please select from the following options:");
         MenuOption[] startOptions = {
                 new MenuOption('n', "New entry"),
+                new MenuOption('r', "Remove entry"),
                 new MenuOption('v', "View boss log"),
                 new MenuOption('p', "View last 5 entries"),
                 new MenuOption('q', "Quit Game")
@@ -162,16 +175,19 @@ public class MainWindow {
 
         switch (parseAndDisplayOptions(startOptions)) {
             case 'n':
-                state = RenderState.NEW_ENTRY;
+                state = NEW_ENTRY;
                 return;
             case 'v':
-                state = RenderState.BOSS_VIEW;
+                state = BOSS_VIEW;
                 return;
             case 'p':
-                state = RenderState.RECENT_VIEW;
+                state = RECENT_VIEW;
                 return;
             case 'q':
                 exitBossLog();
+                return;
+            case 'r':
+                state = REMOVE;
                 return;
             default:
                 System.out.println("That wasn't supposed to happen!");

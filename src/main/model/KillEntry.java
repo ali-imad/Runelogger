@@ -7,7 +7,7 @@ public class KillEntry {
     private final int time; // time in seconds
     //    public Map<Integer, Item> drops; // drops from the kill
     private final int value; // kill drop value
-    private final Boss killed;
+    private final Boss killed; // the boss this entry is tied to
 
     // EFFECTS: Generate a KillEntry tied to a Boss with that kills kill time (in seconds) and value (in gold)
     public KillEntry(Boss b, int time, int value) {

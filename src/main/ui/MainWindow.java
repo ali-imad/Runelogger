@@ -59,6 +59,7 @@ public class MainWindow {
                 return;
             case NEW_ENTRY:
                 displayNewEntryView();
+                return;
             default:
                 throw new RuntimeException("No valid state provided");
         }
@@ -151,6 +152,7 @@ public class MainWindow {
                 }
             }
             System.out.println("Please enter a valid number.");
+            in = input.next();
         } while (true);
 
     }

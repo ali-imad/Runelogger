@@ -1,16 +1,17 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /*
     A Boss Object that serves as the base categorization for our BossLog. KillEntries are tied to Boss's and each Boss
     stores references to all of their logged kills with appropriate stats.
  */
 public class Boss {
+    private final ArrayList<KillEntry> kills;  // KillEntry's corresponding to this boss
+    private final String name; // name of the boss, must be unique
     private int averageKillValue;  // average value of loot dropped by killing this boss
     private int averageTimeToKill;  //  average time to kill, in seconds
-    private final ArrayList<KillEntry> kills;  // KillEntry's corresponding to this boss
-    private final String name; // name of the boss
 
     // EFFECTS: Generate a Boss object to store KillEntry's and appopriate stats.
     //          Fields are initialized to 0 indicating no entries.
@@ -19,6 +20,21 @@ public class Boss {
         this.averageTimeToKill = 0;
         this.averageKillValue = 0;
         this.kills = new ArrayList<>();
+    }
+
+    @Override
+    // EFFECTS: Hash Boss objects based on their name
+    public int hashCode() {
+        return Objects.hash(getName());
+    }
+
+    @Override
+    // EFFECTS: Compare Boss objects by determining if they have the same name
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Boss boss = (Boss) o;
+        return getName().equals(boss.getName());
     }
 
     // EFFECTS: Return the name of the boss as a String

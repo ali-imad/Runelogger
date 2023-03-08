@@ -1,9 +1,12 @@
 package model;
 
+import model.persistence.Writable;
+import org.json.JSONObject;
+
 /*
     Read only struct that handles storing KillEntry values, and ties the KillEntry to a Boss in the BossLog
  */
-public class KillEntry {
+public class KillEntry implements Writable {
     private final int time; // time in seconds
     //    public Map<Integer, Item> drops; // drops from the kill
     private final int value; // kill drop value
@@ -29,5 +32,15 @@ public class KillEntry {
     // EFFECTS: Get the value of the kill, in gp
     public int getValue() {
         return this.value;
+    }
+
+    @Override
+    // EFFECTS: Return a JSONObject representing the kill entry with a comparable reference to the boss
+    public JSONObject toJson() {
+        JSONObject entryAsJson = new JSONObject();
+        entryAsJson.put("time", getTime());
+        entryAsJson.put("value", getTime());
+        entryAsJson.put("killed", getBoss().getName());
+        return entryAsJson;
     }
 }

@@ -25,7 +25,7 @@ public class BossLog implements Writable {
     }
 
     // REQUIRES: this.kills.size() < i
-    // MODIFIES: this.boss.get(i), this.kills
+    // MODIFIES: this.bosses.get(i), this.kills
     // EFFECTS: Generate and add a new entry to the BossLog, updating the appropriate boss by index in this.bosses
     public void addNewEntry(int bossIdx, int time, int value) {
         Boss boss = this.bosses.get(bossIdx);
@@ -35,7 +35,7 @@ public class BossLog implements Writable {
     }
 
     // REQUIRES: this.boss.contains(bossName)
-    // MODIFIES: this.boss.get(i), this.kills
+    // MODIFIES: this.bosses, this.kills
     // EFFECTS: Generate and add a new entry to the BossLog, updating the appropriate boss by name.
     //          If the boss doesn't exist, make it and add the entry!
     public void addNewEntryByName(String bossName, int time, int value) {
@@ -103,6 +103,7 @@ public class BossLog implements Writable {
         return logAsJson;
     }
 
+    // MODIFIES: this.bosses
     // EFFECTS: Add a new boss to the BossLog, if it doesn't already exist
     public void addNewBoss(String bossName) {
         Boss toAdd = new Boss(bossName);

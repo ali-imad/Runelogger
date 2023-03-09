@@ -9,6 +9,8 @@ import java.io.IOException;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+// Source code largely based on provided example in Phase 2 instructions
+// (https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git)
 public class TestJsonWriter extends TestJson {
     @Test
     void testWriterInvalidFile() {

@@ -3,7 +3,11 @@ package ui;
 import model.Boss;
 import model.BossLog;
 import model.KillEntry;
+import model.persistence.JsonReader;
+import model.persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,6 +23,9 @@ public class MainWindow {
     private static Scanner input; // input handler
     private static boolean isRunning = true;  // determines if we should render a view or exit
     private static RenderState state;  // the state of the application. determines what should be rendered
+    private static final String saveLocation = "./session.json";
+    private JsonReader reader;
+    private JsonWriter writer;
 
     // EFFECTS: Create a MainWindow to render and input handle the BossLog
     public MainWindow(BossLog l) {
@@ -26,6 +33,8 @@ public class MainWindow {
         input = new Scanner(System.in);
         input.useDelimiter("\n"); // parse input with enter
         state = MENU;
+        this.reader = new JsonReader(saveLocation);
+        this.writer = new JsonWriter(saveLocation);
     }
 
     // EFFECTS: Start the application, initializing and running the main loop as necessary
@@ -102,6 +111,7 @@ public class MainWindow {
             Boss b = log.getBosses()[i];
             optionsList.add(new MenuOption((char) (i + '0'), b.getName()));
         }
+        optionsList.add(new MenuOption('n', "New boss"));
         optionsList.add(new MenuOption('b', "Go back to the menu"));
         char choice = parseAndDisplayOptions(optionsList.toArray(new MenuOption[0]));
         if (choice == 'b') {
@@ -109,7 +119,20 @@ public class MainWindow {
             return null;
         }
 
+        if (choice == 'n') {
+            addNewBoss();
+            state = NEW_ENTRY;
+            return null;
+        }
+
         return Character.getNumericValue(choice);
+    }
+
+    // MODIFIES: log
+    // EFFECTS: Add a new boss to the log
+    private void addNewBoss() {
+        String bossName = parseStringFromField("What is the name of the boss you would like to add?");
+        log.addNewBoss(bossName);
     }
 
     // EFFECTS: Show the most recent x KillEntry's logged, or all if x > log.kills.size()
@@ -179,7 +202,9 @@ public class MainWindow {
                 new MenuOption('r', "Remove entry"),
                 new MenuOption('v', "View boss log"),
                 new MenuOption('p', "View last 5 entries"),
-                new MenuOption('q', "Quit Game")
+                new MenuOption('s', "Save the currently logged entries"),
+                new MenuOption('l', "Load previously saved entries"),
+                new MenuOption('q', "Quit logger")
         };
         
         char choice = parseAndDisplayOptions(startOptions);
@@ -206,24 +231,45 @@ public class MainWindow {
             case 'r':
                 state = REMOVE;
                 return;
+            case 'l':
+                loadSavedLogFile();
+                return;
+            case 's':
+                saveLogToFile();
+                return;
             default:
                 System.out.println("That wasn't supposed to happen!");
                 displayStartMenu();
         }
     }
 
+    // MODIFIES: client file system
+    // EFFECTS: Tries to serialize the log and save it to a JSON file at saveLocation
+    private void saveLogToFile() {
+        try {
+            writer.open();
+            writer.write(log);
+            writer.close();
+            System.out.println("File was successfully saved to " + saveLocation);
+        } catch (FileNotFoundException e) {
+            System.out.println("File could not be saved to " + saveLocation);
+        }
+        state = MENU;
+    }
+
     private void exitBossLog() {
         isRunning = false;
     }
-//
-//    private String parseStringFromField(String field) {
-//        String inputString;
-//        do {
-//            System.out.printf(field + ": \t");
-//            inputString = input.next();
-//        } while (!(inputString.length() > 0));
-//        return inputString;
-//    }
+
+    // EFFECTS: Print a field entry line and returns a string, parsing until something > 0 characters is entered
+    private String parseStringFromField(String field) {
+        String inputString;
+        do {
+            System.out.printf(field + ": \t");
+            inputString = input.next();
+        } while (!(inputString.length() > 0));
+        return inputString;
+    }
 
     private char parseInputFromChoice(List<Character> valid) {
         System.out.println();
@@ -240,4 +286,15 @@ public class MainWindow {
         return decision.toCharArray()[0];
     }
 
+    // MODIFIES: MainWindow.log, MainWindow.state
+    // EFFECTS: Load a saved session into the logger
+    private void loadSavedLogFile() {
+        try {
+            log = this.reader.read();
+            System.out.println("Loaded the saved session from " + saveLocation);
+        } catch (IOException e) {
+            System.out.println("You do not have any session saved!");
+        }
+        state = MENU;
+    }
 }

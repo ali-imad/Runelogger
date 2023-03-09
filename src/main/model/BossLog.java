@@ -52,10 +52,9 @@ public class BossLog implements Writable {
         }
 
         // we could not find the boss in the list, so make a new boss and add it to the logger
-        KillEntry newEntry = new KillEntry(toFind, time, value);
-        toFind.add(newEntry);
         this.bosses.add(toFind);
-        this.kills.add(newEntry);
+        int newBossIdx = this.bosses.size() - 1;
+        addNewEntry(newBossIdx, time, value);
     }
 
     // EFFECTS: Returns a readonly array of the bosses to reference
@@ -100,6 +99,11 @@ public class BossLog implements Writable {
             killsAsArray.put(k.toJson());
         }
 
+        logAsJson.put("kills", killsAsArray);
         return logAsJson;
+    }
+
+    public void addNewBoss(String bossName) {
+        this.bosses.add(new Boss(bossName));
     }
 }

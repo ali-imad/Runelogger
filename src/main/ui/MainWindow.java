@@ -107,9 +107,11 @@ public class MainWindow {
     // EFFECTS: Returns an integer corresponding to the index of the boss in log.bosses
     private Integer getBossChoice() {
         List<MenuOption> optionsList = new ArrayList<>();
+        int lastIdx = 0;
         for (int i = 0; i < log.getBosses().length; i++) {
             Boss b = log.getBosses()[i];
             optionsList.add(new MenuOption((char) (i + '0'), b.getName()));
+            lastIdx = i;
         }
         optionsList.add(new MenuOption('n', "New boss"));
         optionsList.add(new MenuOption('b', "Go back to the menu"));
@@ -121,8 +123,7 @@ public class MainWindow {
 
         if (choice == 'n') {
             addNewBoss();
-            state = NEW_ENTRY;
-            return null;
+            return ++lastIdx;
         }
 
         return Character.getNumericValue(choice);

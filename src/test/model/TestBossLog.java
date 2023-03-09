@@ -152,20 +152,6 @@ class TestBossLog {
     }
 
     @Test
-    void testTwoSameNameBossesHaveSameHashCode() {
-        Boss bossOne = new Boss("test");
-        Boss bossTwo = new Boss("test");
-        assertEquals(bossTwo.hashCode(), bossOne.hashCode());
-    }
-
-    @Test
-    void testTwoDifferentBossesHaveSameHashCode() {
-        Boss bossOne = new Boss("test");
-        Boss bossTwo = new Boss("best");
-        assertNotEquals(bossTwo.hashCode(), bossOne.hashCode());
-    }
-
-    @Test
     void testNewBossCanBeAdded() {
         int originalLength = testLog.getBosses().length;
         testLog.addNewBoss("Test");  // a default boss

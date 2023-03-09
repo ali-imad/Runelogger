@@ -35,9 +35,9 @@ public class Boss {
             return true;
         }
 
-        if (o == null || getClass() != o.getClass()) {
-            return false;
-        }
+//        if (o == null || getClass() != o.getClass()) {
+//            return false;
+//        }
 
         Boss boss = (Boss) o;
         return getName().equals(boss.getName());

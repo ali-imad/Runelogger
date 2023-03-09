@@ -1,6 +1,8 @@
 package model.persistence;
 
 import model.BossLog;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
@@ -36,10 +38,16 @@ public class JsonReader {
     // MODIFIES: log
     // EFFECTS: Parse each entry in the json object and generate log entries sequentially
     private void addEntries(BossLog log, JSONObject jsonObject) {
-        for (Object json : jsonObject.getJSONArray("kills")) {
-            JSONObject nextObject = (JSONObject) json;
-            String bossName = nextObject.getString("killed");
-            log.addNewEntryByName(bossName, nextObject.getInt("time"), nextObject.getInt("value"));
+        JSONArray kills = (JSONArray) jsonObject.get("kills");
+        for (Object k : kills) {
+            JSONObject entryAsJson = (JSONObject) k;
+            try {
+                String bossName = entryAsJson.getString("killed");
+                log.addNewEntryByName(bossName, entryAsJson.getInt("time"), entryAsJson.getInt("value"));
+            } catch (JSONException e) {
+                // No entries, return without doing anything
+                return;
+            }
         }
     }
 
@@ -47,7 +55,7 @@ public class JsonReader {
     private String readFile(String source) throws IOException {
         StringBuilder contentBuilder = new StringBuilder();
 
-        try (Stream<String> stream = Files.lines( Paths.get(source), StandardCharsets.UTF_8)) {
+        try (Stream<String> stream = Files.lines(Paths.get(source), StandardCharsets.UTF_8)) {
             stream.forEach(s -> contentBuilder.append(s));
         }
 

@@ -31,8 +31,14 @@ public class Boss {
     @Override
     // EFFECTS: Compare Boss objects by determining if they have the same name
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o) {
+            return true;
+        }
+
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
         Boss boss = (Boss) o;
         return getName().equals(boss.getName());
     }

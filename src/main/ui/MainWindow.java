@@ -23,7 +23,7 @@ public class MainWindow {
     private static Scanner input; // input handler
     private static boolean isRunning = true;  // determines if we should render a view or exit
     private static RenderState state;  // the state of the application. determines what should be rendered
-    private static final String saveLocation = "./session.json";
+    private static final String saveLocation = "./data/session.json";
     private JsonReader reader;
     private JsonWriter writer;
 
@@ -214,6 +214,7 @@ public class MainWindow {
 
     // REQUIRES: state == MENU
     // EFFECTS: Change the state depending on what was chosen in the main menu screen
+    @SuppressWarnings("methodlength")
     private void setNewStateFromMenu(char choice) {
         switch (choice) {
             case 'n':

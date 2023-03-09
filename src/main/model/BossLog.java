@@ -18,12 +18,10 @@ public class BossLog implements Writable {
     public BossLog() {
         this.bosses = new ArrayList<>();
         this.kills = new ArrayList<>();
-//        Boss vorkath = new Boss("Vorkath");
-//        Boss giantMole = new Boss("Giant Mole");
-//        Boss zulrah = new Boss("Zulrah");
-//        this.bosses.add(vorkath);
-//        this.bosses.add(giantMole);
-//        this.bosses.add(zulrah);
+        // set up initial bosses to select from
+        this.addNewBoss("Vorkath");
+        this.addNewBoss("Giant Mole");
+        this.addNewBoss("Zulrah");
     }
 
     // REQUIRES: this.kills.size() < i
@@ -90,6 +88,8 @@ public class BossLog implements Writable {
     }
 
     @Override
+    // EFFECTS: Serializes the BossLog in its state by the kill entries in this.kills and returns it as a JSONObject
+    //          Bosses are only serialized if they have a KillEntry
     public JSONObject toJson() {
         JSONObject logAsJson = new JSONObject();
 
@@ -103,7 +103,12 @@ public class BossLog implements Writable {
         return logAsJson;
     }
 
+    // EFFECTS: Add a new boss to the BossLog, if it doesn't already exist
     public void addNewBoss(String bossName) {
+        Boss toAdd = new Boss(bossName);
+        if (this.bosses.contains(toAdd)) {
+            return;
+        }
         this.bosses.add(new Boss(bossName));
     }
 }

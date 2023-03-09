@@ -39,7 +39,7 @@ public class KillEntry implements Writable {
     public JSONObject toJson() {
         JSONObject entryAsJson = new JSONObject();
         entryAsJson.put("time", getTime());
-        entryAsJson.put("value", getTime());
+        entryAsJson.put("value", getValue());
         entryAsJson.put("killed", getBoss().getName());
         return entryAsJson;
     }

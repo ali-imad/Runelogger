@@ -34,7 +34,7 @@ class TestBossLog {
     }
 
     @Test
-    void testAddNewEntry() {
+    void testAddNewEntryByIdx() {
         int testBossIdx = 0;
         int testTime = 3000;
         int testValue = 3000;
@@ -43,7 +43,7 @@ class TestBossLog {
     }
 
     @Test
-    void testAddMultipleOfSameEntry() {
+    void testAddMultipleOfSameEntryByIdx() {
         int testBossIdx = 0;
         int testTime = 3000;
         int testValue = 3000;
@@ -59,7 +59,7 @@ class TestBossLog {
     }
 
     @Test
-    void testAddMultipleOfSameBossDifferentValues() {
+    void testAddMultipleOfSameBossDifferentValuesByIdx() {
         int testBossIdx = 0;
         int testTime = 3000;
         int testValue = 3000;
@@ -75,8 +75,64 @@ class TestBossLog {
     }
 
     @Test
+    void testAddNewEntryByName() {
+        String testBossName = "Vorkath";
+        int testTime = 3000;
+        int testValue = 3000;
+        testLog.addNewEntryByName(testBossName, testTime, testValue);
+        assertEquals(1, testLog.getTotalKills());
+    }
+
+    @Test
+    void testAddNewEntryOfNewBossByName() {
+        int originalLength = testLog.getBosses().length;
+        String testBossName = "Test";
+        int testTime = 3000;
+        int testValue = 2000;
+        testLog.addNewEntryByName(testBossName, testTime, testValue);
+        assertEquals(originalLength + 1, testLog.getBosses().length);
+        assertEquals("Test", testLog.getBosses()[originalLength].getName());
+        assertEquals("Test", testLog.getEntry(0).getBoss().getName());
+        assertEquals(testValue, testLog.getEntry(0).getBoss().getAvgValue());
+        assertEquals(testTime, testLog.getEntry(0).getBoss().getAvgTime());
+    }
+
+    @Test
+    void testAddMultipleOfSameEntryByName() {
+        int testBossName = 0;
+        int testTime = 3000;
+        int testValue = 3000;
+
+        int count = 4;
+
+        for (int i = 0; i < count; i++) {
+            testLog.addNewEntry(testBossName, testTime, testValue);
+            assertEquals(i+1, testLog.getTotalKills());
+            assertEquals(testValue, testLog.getBosses()[testBossName].getAvgValue());
+            assertEquals(testTime, testLog.getBosses()[testBossName].getAvgTime());
+        }
+    }
+
+    @Test
+    void testAddMultipleOfSameBossDifferentValuesByName() {
+        String testBossName = "Vorkath";
+        int testBossIdx = 0;
+        int testTime = 3000;
+        int testValue = 3000;
+
+        testLog.addNewEntryByName(testBossName, testTime, testValue);
+        assertEquals(testValue, testLog.getBosses()[testBossIdx].getAvgValue());
+        assertEquals(testTime, testLog.getBosses()[testBossIdx].getAvgTime());
+
+        // ensure averages update properly
+        testLog.addNewEntryByName(testBossName, testTime*3, testValue*3);
+        assertEquals(2*testValue, testLog.getBosses()[testBossIdx].getAvgValue());
+        assertEquals(2*testTime, testLog.getBosses()[testBossIdx].getAvgTime());
+    }
+
+    @Test
     void testRemoveEntry() {
-        testAddMultipleOfSameEntry();
+        testAddMultipleOfSameEntryByIdx();
 
         KillEntry first = testLog.getEntry(0);
 
@@ -93,6 +149,35 @@ class TestBossLog {
         assertEquals(last, testLog.getEntry(testLog.getTotalKills() - 1));
         testLog.removeEntry(testLog.getTotalKills() - 1);
         assertNotEquals(last, testLog.getFromEnd(0));
+    }
+
+    @Test
+    void testTwoSameNameBossesHaveSameHashCode() {
+        Boss bossOne = new Boss("test");
+        Boss bossTwo = new Boss("test");
+        assertEquals(bossTwo.hashCode(), bossOne.hashCode());
+    }
+
+    @Test
+    void testTwoDifferentBossesHaveSameHashCode() {
+        Boss bossOne = new Boss("test");
+        Boss bossTwo = new Boss("best");
+        assertNotEquals(bossTwo.hashCode(), bossOne.hashCode());
+    }
+
+    @Test
+    void testNewBossCanBeAdded() {
+        int originalLength = testLog.getBosses().length;
+        testLog.addNewBoss("Test");  // a default boss
+        assertEquals(originalLength + 1, testLog.getBosses().length);
+        assertEquals("Test", testLog.getBosses()[originalLength].getName());
+    }
+
+    @Test
+    void testDuplicateBossesNotAdded() {
+        int originalLength = testLog.getBosses().length;
+        testLog.addNewBoss("Vorkath");  // a default boss
+        assertEquals(originalLength, testLog.getBosses().length);
     }
 
 //    @Test

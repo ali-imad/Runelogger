@@ -15,7 +15,7 @@ import static ui.gui.GUI.rsFont;
     Class responsible for generating the game view using Swing
  */
 public class MainWindowSwing extends MainWindow {
-    private static JFrame main;
+    public static final JFrame main = new JFrame();
     private static final Font font = rsFont.deriveFont(12.0f);
     private final Color bgC = Color.decode("#81603C");
     private final int mainW = 1400;
@@ -25,7 +25,6 @@ public class MainWindowSwing extends MainWindow {
 
     public MainWindowSwing(BossLog l) {
         super(l);
-        main = new JFrame();
     }
 
     public static Font getFont(float size) {

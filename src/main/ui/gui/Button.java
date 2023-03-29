@@ -14,6 +14,7 @@ public class Button extends MenuOption {
     private final int width;
     private final int height;
     private final float labelSize;
+    private ActionListener listener;
 
     public Button(String label, float labelSize, String imagePath, int width, int height) {
         super(label);
@@ -21,17 +22,22 @@ public class Button extends MenuOption {
         this.imagePath = imagePath;
         this.width = width;
         this.height = height;
+        this.listener = null;
     }
 
-    public JToggleButton makeToggleButton(Color bgC, ActionListener a) {
-        JToggleButton button = new JToggleButton(this.label);
+    public void setListener(ActionListener listener) {
+        this.listener = listener;
+    }
+
+    public JButton makeToggleButton(Color bgC) {
+        JButton button = new JButton(this.label);
         button.setFont(rsFont.deriveFont(labelSize));
         button.setHorizontalTextPosition(JButton.CENTER);
         button.setVerticalTextPosition(JButton.CENTER);
         button.setOpaque(true);
         button.setBackground(bgC);
         button.setBorder(defaultBorder);
-        button.addActionListener(a);
+        button.addActionListener(this.listener);
         button.setPreferredSize(new Dimension(width, height));
         return button;
     }

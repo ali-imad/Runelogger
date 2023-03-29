@@ -1,12 +1,15 @@
 package ui.gui;
 
+import ui.gui.buttons.ActivePanelSwapper;
+import ui.gui.panels.BossView;
+
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.util.ArrayList;
 
 import static ui.gui.GUI.defaultBorder;
-import static ui.gui.GUI.menuButtonColor;
+import static ui.gui.GUI.unselectedMenuColour;
 
 public class MenuView {
     private static final int outerW = 320;
@@ -26,6 +29,11 @@ public class MenuView {
         Button boss = new Button("View Bosses", 20.0f, null, 260, 64);
         Button entries = new Button("View All Entries", 20.0f, null, 260, 64);
         Button persistence = new Button("Save/Load Log", 20.0f, null, 260, 64);
+
+        addNew.setListener(new ActivePanelSwapper(MainWindowSwing.main,
+                new BossView("Smorcath").getPanel()));
+        boss.setListener(new ActivePanelSwapper(MainWindowSwing.main,
+                new BossView("Vorkath").getPanel()));
 
         menuButtons.add(addNew);
         menuButtons.add(boss);
@@ -51,8 +59,11 @@ public class MenuView {
         innerPanel.setPreferredSize(new Dimension(innerW, innerH));
         innerPanel.setBackground(GUI.menuColor);
 
+        ButtonGroup menuButtonGroup = new ButtonGroup();
         for (Button b : menuButtons) {
-            innerPanel.add(b.makeToggleButton(menuButtonColor, null));
+            JButton tgBttn = b.makeToggleButton(unselectedMenuColour);
+            innerPanel.add(tgBttn);
+            menuButtonGroup.add(tgBttn);
         }
 
         outerPanel.add(innerPanel, BorderLayout.CENTER);

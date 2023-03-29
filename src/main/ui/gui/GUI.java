@@ -8,7 +8,8 @@ import java.io.IOException;
 
 public class GUI {
     public static final Color menuColor = Color.decode("#ADA082");
-    public static final Color menuButtonColor = Color.decode("#DFDACE");
+    public static final Color unselectedMenuColour = Color.decode("#DFDACE");
+    public static final Color selectedMenuColour = Color.decode("#786857");
 
     public static final Font rsFont = getFont();
     public static final Border defaultBorder = BorderFactory.createLineBorder(

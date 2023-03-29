@@ -24,7 +24,8 @@ public class BossView extends ActiveView {
 
     @Override
     public JPanel getPanel() {
-        JPanel bossPanel = new JPanel();
+        JPanel bossPanel = new JPanel(new FlowLayout());
+        bossPanel.add(new JLabel(this.title));
 //        bossPanel.setLayout(null);
 //        bossPanel.setBounds(new Rectangle(this.panelX, this.panelY, this.panelW, this.panelH));
         bossPanel.setPreferredSize(new Dimension(this.panelW, this.panelH));

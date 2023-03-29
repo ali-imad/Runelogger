@@ -1,6 +1,7 @@
 package ui;
 
 import model.BossLog;
+import ui.gui.MainWindowSwing;
 
 public class Main {
     // EFFECTS: Initialize and start rendering the boss log application, adding in some sample entries
@@ -23,7 +24,8 @@ public class Main {
 //        log.addNewEntryByName("Bandos", 56, 18229);
 //        log.addNewEntryByName("Giant Mole", 124, 60023);
 //        log.addNewEntryByName("Zulrah", 68, 30893);
-        MainWindow main = new MainWindow(log);
+//        MainWindow main = new MainWindowConsole(log);
+        MainWindow main = new MainWindowSwing(log);
         main.start();
     }
 }

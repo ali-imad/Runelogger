@@ -1,24 +1,17 @@
 package ui;
 
 /*
-    A menu option for the UI to process and render
+    A renderable menu option for the UI to process and render
  */
-public class MenuOption {
-    private final char button;  // button correspondng to this option
-    private final String description;  // label for the button
+public abstract class MenuOption {
+    protected final String label;  // label for the button
 
-    public MenuOption(char button, String desc) {
-        this.button = button;
-        this.description = desc;
-    }
-
-    // EFFECTS: Returns the options character for selection
-    public char getButton() {
-        return button;
+    public MenuOption(String label) {
+        this.label = label;
     }
 
     // EFFECTS: Returns the option label
-    public String getDescription() {
-        return description;
+    public String getLabel() {
+        return label;
     }
 }

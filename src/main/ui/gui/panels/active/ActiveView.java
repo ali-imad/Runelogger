@@ -1,10 +1,11 @@
-package ui.gui.panels;
+package ui.gui.panels.active;
 
 import ui.gui.Button;
+import ui.gui.GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 public abstract class ActiveView {
     public int getPanelW() {
@@ -28,13 +29,12 @@ public abstract class ActiveView {
     protected final int panelX = 385; // view x
     protected final int panelY = 80; // view y
     protected String title;
-    protected HashMap<String, Button> buttons;
-    protected Color bgColour;
+    protected ArrayList<Button> buttons;
+    protected static final Color bgColour = GUI.activeViewBgColour;
 
-    public ActiveView(String title, HashMap<String, Button> buttons, Color bgC) {
+    public ActiveView(String title, ArrayList<Button> buttons) {
         this.title = title;
         this.buttons = buttons;
-        this.bgColour = bgC;
     }
 
     public abstract JPanel getPanel();

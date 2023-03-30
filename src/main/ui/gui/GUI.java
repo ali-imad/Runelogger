@@ -15,6 +15,7 @@ public class GUI {
     public static final Border defaultBorder = BorderFactory.createLineBorder(
             Color.decode("#463D33"), 4
     );
+    public static Color activeViewBgColour = Color.decode("#DFDACE");
 
     private static Font getFont() {
         try {

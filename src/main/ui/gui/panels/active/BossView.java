@@ -1,37 +1,40 @@
-package ui.gui.panels;
+package ui.gui.panels.active;
 
-import ui.gui. Button;
+import model.Boss;
+import ui.gui.Button;
+import ui.gui.GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import static ui.gui.GUI.defaultBorder;
 
 public class BossView extends ActiveView {
-    // TODO: extract colours to GUI
-    private static final Color bossViewColour = Color.decode("#DFDACE");
-
-    private static HashMap<String, Button> getBossButtons() {
-        HashMap<String, Button> bossButtons = new HashMap<String, Button>();
+    private static ArrayList<Button> getBossButtons() {
+        ArrayList<Button> bossButtons = new ArrayList<>();
         return bossButtons;
     }
 
-    public BossView(String title) {
-        super(title, getBossButtons(), bossViewColour);
+    public BossView(Boss b) {
+        super(b.getName(), getBossButtons());
     }
 
 
     @Override
     public JPanel getPanel() {
         JPanel bossPanel = new JPanel(new FlowLayout());
-        bossPanel.add(new JLabel(this.title));
+
+        JLabel jTitle = new JLabel(this.title);
+        jTitle.setFont(GUI.rsFont.deriveFont(72.0f));
+
+        bossPanel.add(jTitle);
 //        bossPanel.setLayout(null);
 //        bossPanel.setBounds(new Rectangle(this.panelX, this.panelY, this.panelW, this.panelH));
         bossPanel.setPreferredSize(new Dimension(this.panelW, this.panelH));
         bossPanel.setMinimumSize(new Dimension(this.panelW, this.panelH));
         bossPanel.setBorder(defaultBorder);
-        bossPanel.setBackground(this.bgColour);
+        bossPanel.setBackground(bgColour);
         return bossPanel;
     }
 }

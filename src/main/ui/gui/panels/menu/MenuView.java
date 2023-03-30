@@ -1,7 +1,11 @@
-package ui.gui;
+package ui.gui.panels.menu;
 
+import model.Boss;
+import ui.gui.Button;
+import ui.gui.GUI;
+import ui.gui.MainWindowSwing;
 import ui.gui.buttons.ActivePanelSwapper;
-import ui.gui.panels.BossView;
+import ui.gui.panels.active.BossView;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -17,23 +21,24 @@ public class MenuView {
     private static final int innerW = 270;
     private static final int innerH = 365;
 
-    private static final ArrayList<Button> menuButtons = getMenuButtons();
+    private static final ArrayList<ui.gui.Button> menuButtons = getMenuButtons();
 
     public MenuView() {
+
     }
 
-    private static ArrayList<Button> getMenuButtons() {
-        ArrayList<Button> menuButtons = new ArrayList<>();
+    private static ArrayList<ui.gui.Button> getMenuButtons() {
+        ArrayList<ui.gui.Button> menuButtons = new ArrayList<>();
 
-        Button addNew = new Button("Add New Entry", 20.0f, null, 260, 64);
-        Button boss = new Button("View Bosses", 20.0f, null, 260, 64);
-        Button entries = new Button("View All Entries", 20.0f, null, 260, 64);
-        Button persistence = new Button("Save/Load Log", 20.0f, null, 260, 64);
+        ui.gui.Button addNew = new ui.gui.Button("Add New Entry", 20.0f, null, 260, 64);
+        ui.gui.Button boss = new ui.gui.Button("View Bosses", 20.0f, null, 260, 64);
+        ui.gui.Button entries = new ui.gui.Button("View All Entries", 20.0f, null, 260, 64);
+        ui.gui.Button persistence = new ui.gui.Button("Save/Load Log", 20.0f, null, 260, 64);
 
         addNew.setListener(new ActivePanelSwapper(MainWindowSwing.main,
-                new BossView("Smorcath").getPanel()));
+                MainWindowSwing.newEntryPanel));
         boss.setListener(new ActivePanelSwapper(MainWindowSwing.main,
-                new BossView("Vorkath").getPanel()));
+                new BossView(new Boss("Vorkath")).getPanel()));
 
         menuButtons.add(addNew);
         menuButtons.add(boss);

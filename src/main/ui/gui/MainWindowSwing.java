@@ -2,8 +2,10 @@ package ui.gui;
 
 import model.BossLog;
 import ui.MainWindow;
-import ui.gui.panels.ActiveView;
-import ui.gui.panels.BossView;
+import ui.gui.panels.active.ActiveView;
+import ui.gui.panels.active.AddEntryView;
+import ui.gui.panels.active.SplashView;
+import ui.gui.panels.menu.MenuView;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -22,6 +24,7 @@ public class MainWindowSwing extends MainWindow {
     private final int mainH = 800;
     private JPanel menuPanel; // panel
     private JPanel activePanel;
+    public static JPanel newEntryPanel;
 
     public MainWindowSwing(BossLog l) {
         super(l);
@@ -29,11 +32,6 @@ public class MainWindowSwing extends MainWindow {
 
     public static Font getFont(float size) {
         return font.deriveFont(size);
-    }
-
-    private void initCustomFont() {
-        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
-        ge.registerFont(font);
     }
 
     // EFFECTS: Start the application, initializing and running the main loop as necessary
@@ -57,6 +55,8 @@ public class MainWindowSwing extends MainWindow {
         main.getRootPane().setBorder(new EmptyBorder(80, 42, 80, 42));
         main.getRootPane().setBackground(bgC);
 
+        newEntryPanel = initEntryView();
+
         main.add(initSelectorPanel(), BorderLayout.LINE_START);
         main.add(initDivider(), BorderLayout.CENTER);
         main.add(initActivePanel(), BorderLayout.LINE_END);
@@ -64,6 +64,11 @@ public class MainWindowSwing extends MainWindow {
         main.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         main.pack();
         main.setLocationRelativeTo(null);
+    }
+
+    private JPanel initEntryView() {
+        AddEntryView view = new AddEntryView();
+        return view.getPanel();
     }
 
     private JPanel initSelectorPanel() {
@@ -79,7 +84,7 @@ public class MainWindowSwing extends MainWindow {
     }
 
     private JPanel initActivePanel() {
-        ActiveView view = new BossView("Vorkath");
+        ActiveView view = new SplashView();
         return view.getPanel();
     }
 

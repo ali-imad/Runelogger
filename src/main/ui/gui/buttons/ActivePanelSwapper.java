@@ -23,9 +23,11 @@ public class ActivePanelSwapper implements ActionListener {
         for (Component c : toggleButton.getParent().getComponents()) {
             JButton b = (JButton) c;
             b.setBackground(GUI.unselectedMenuColour);
+            b.setForeground(Color.BLACK);
         }
         // set this buttons bg to selected
         toggleButton.setBackground(GUI.selectedMenuColour);
+        toggleButton.setForeground(Color.YELLOW);
 
         frame.getContentPane().remove(root);
         frame.getContentPane().add(swap, BorderLayout.LINE_END);

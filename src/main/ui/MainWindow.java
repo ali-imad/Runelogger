@@ -10,6 +10,10 @@ import java.util.Scanner;
 import static ui.RenderState.MENU;
 
 public abstract class MainWindow {
+    public static BossLog getLog() {
+        return log;
+    }
+
     protected static BossLog log; // model to attach
     protected static Scanner input; // input handler
     protected static boolean isRunning = true;  // determines if we should render a view or exit

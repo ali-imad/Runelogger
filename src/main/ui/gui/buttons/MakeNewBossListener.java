@@ -1,6 +1,7 @@
 package ui.gui.buttons;
 
 import ui.MainWindow;
+import ui.gui.MainWindowSwing;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,6 +22,8 @@ public class MakeNewBossListener implements ActionListener {
             String bossName = bossNameField.getText();
             // Pass the three inputs to a method called "processInputs"
             MainWindow.getLog().addNewBoss(bossName);
+            BossSelectSwapListener reloader = new BossSelectSwapListener(MainWindowSwing.main, 0);
+            reloader.actionPerformed(e);
         }
     }
 }

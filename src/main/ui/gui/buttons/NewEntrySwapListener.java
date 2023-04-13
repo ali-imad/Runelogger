@@ -1,19 +1,18 @@
 package ui.gui.buttons;
 
 import ui.gui.GUI;
+import ui.gui.panels.active.AddEntryView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ActivePanelSwapper implements ActionListener {
+public class NewEntrySwapListener implements ActionListener {
     private final JFrame frame;
-    private final JPanel swap;
 
-    public ActivePanelSwapper(JFrame frame, JPanel swap) {
+    public NewEntrySwapListener(JFrame frame) {
         this.frame = frame;
-        this.swap = swap;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -31,7 +30,7 @@ public class ActivePanelSwapper implements ActionListener {
         toggleButton.setForeground(Color.YELLOW);
 
         frame.getContentPane().remove(root);
-        frame.getContentPane().add(swap, BorderLayout.LINE_END);
+        frame.getContentPane().add(new AddEntryView().getPanel(), BorderLayout.LINE_END);
         frame.revalidate();
         frame.repaint();
     }

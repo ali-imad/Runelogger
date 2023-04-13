@@ -1,7 +1,5 @@
 package ui.gui.panels.active;
 
-import ui.gui.GUI;
-
 import javax.swing.*;
 import java.awt.*;
 
@@ -16,10 +14,9 @@ public class SplashView extends ActiveView {
     public JPanel getPanel() {
         JPanel splashPanel = new JPanel(new FlowLayout());
 
-        JLabel jTitle = new JLabel(this.title);
-        jTitle.setFont(GUI.rsFont.deriveFont(72.0f));
+        JPanel titlePanel = getTitlePanel();
 
-        splashPanel.add(jTitle);
+        splashPanel.add(titlePanel);
 
         splashPanel.setPreferredSize(new Dimension(this.panelW, this.panelH));
         splashPanel.setMinimumSize(new Dimension(this.panelW, this.panelH));

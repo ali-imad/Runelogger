@@ -22,9 +22,18 @@ public class MainWindowSwing extends MainWindow {
     private final Color bgC = Color.decode("#81603C");
     private final int mainW = 1400;
     private final int mainH = 800;
-    private JPanel menuPanel; // panel
-    private JPanel activePanel;
-    public static JPanel newEntryPanel;
+    private static JPanel menuPanel; // panel
+    private static JPanel activePanel;
+
+    public static JPanel getNewEntryPanel() {
+        return newEntryPanel;
+    }
+
+    public static void setNewEntryPanel(JPanel newEntryPanel) {
+        MainWindowSwing.newEntryPanel = newEntryPanel;
+    }
+
+    private static JPanel newEntryPanel;
 
     public MainWindowSwing(BossLog l) {
         super(l);
@@ -47,7 +56,7 @@ public class MainWindowSwing extends MainWindow {
     }
 
     // MODIFIES: main
-// EFFECTS: intializes main with default params
+    // EFFECTS: intializes main with default params
     private void initMainFrame() {
         Container mainPanel = main.getContentPane();
         main.setLayout(new BorderLayout());
@@ -57,6 +66,7 @@ public class MainWindowSwing extends MainWindow {
 
         newEntryPanel = initEntryView();
 
+        menuPanel = initSelectorPanel();
         main.add(initSelectorPanel(), BorderLayout.LINE_START);
         main.add(initDivider(), BorderLayout.CENTER);
         main.add(initActivePanel(), BorderLayout.LINE_END);
@@ -66,12 +76,21 @@ public class MainWindowSwing extends MainWindow {
         main.setLocationRelativeTo(null);
     }
 
+    // EFFECTS: (re)renders the selector panel to have correct references to the new log
+    public static void renderSelectorPanel() {
+        main.remove(menuPanel);
+        menuPanel = initSelectorPanel();
+        main.add(menuPanel, BorderLayout.LINE_START);
+        main.revalidate();
+        main.repaint();
+    }
+
     private JPanel initEntryView() {
         AddEntryView view = new AddEntryView();
         return view.getPanel();
     }
 
-    private JPanel initSelectorPanel() {
+    private static JPanel initSelectorPanel() {
         MenuView view = new MenuView();
         return view.getPanel();
     }

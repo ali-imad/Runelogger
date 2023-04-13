@@ -4,6 +4,7 @@ import model.BossLog;
 import model.persistence.JsonReader;
 import model.persistence.JsonWriter;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Scanner;
 
@@ -18,9 +19,9 @@ public abstract class MainWindow {
     protected static Scanner input; // input handler
     protected static boolean isRunning = true;  // determines if we should render a view or exit
     protected static RenderState state;  // the state of the application. determines what should be rendered
-    protected static final String saveLocation = "./data/session.json";
-    protected JsonReader reader;
-    protected JsonWriter writer;
+    public static final String defaultSaveLocation = "./data/session.json";
+    protected static JsonReader reader;
+    protected static JsonWriter writer;
 
     // EFFECTS: Create a MainWindow to render and input handle the BossLog
     public MainWindow(BossLog l) {
@@ -28,16 +29,32 @@ public abstract class MainWindow {
         input = new Scanner(System.in);
         input.useDelimiter("\n"); // parse input with enter
         state = MENU;
-        this.reader = new JsonReader(saveLocation);
-        this.writer = new JsonWriter(saveLocation);
+        reader = new JsonReader(defaultSaveLocation);
+        writer = null;
     }
 
     public abstract void start();
 
     // MODIFIES: log
     // EFFECTS: sets the log to the file at saveLocation
-    public void loadLogFile() throws IOException {
-        log = this.reader.read();
+    public static void loadLogFile() throws IOException {
+        log = getLogFromPath(defaultSaveLocation);
+    }
+
+    // MODIFIES: log
+    // EFFECTS: sets the log to the file at saveLocation
+    public static BossLog getLogFromPath(String path) throws IOException {
+        reader = new JsonReader(path);
+        return reader.read();
+    }
+
+    // MODIFIES: client file system
+    // EFFECTS: Tries to serialize the log and save it to a JSON file at saveLocation
+    public static void saveLogToPath(String path) throws FileNotFoundException {
+        writer = new JsonWriter(path);
+        writer.open();
+        writer.write(log);
+        writer.close();
     }
 
 

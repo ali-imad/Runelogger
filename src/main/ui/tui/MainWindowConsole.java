@@ -234,12 +234,10 @@ public class MainWindowConsole extends MainWindow {
     // EFFECTS: Tries to serialize the log and save it to a JSON file at saveLocation
     private void saveLogToFile() {
         try {
-            writer.open();
-            writer.write(log);
-            writer.close();
-            System.out.println("File was successfully saved to " + saveLocation);
+            this.saveLogToPath(defaultSaveLocation);
+            System.out.println("File was successfully saved to " + defaultSaveLocation);
         } catch (FileNotFoundException e) {
-            System.out.println("File could not be saved to " + saveLocation);
+            System.out.println("File could not be saved to " + defaultSaveLocation);
         }
         state = MENU;
     }
@@ -278,7 +276,7 @@ public class MainWindowConsole extends MainWindow {
     private void loadSavedLogFile() {
         try {
             this.loadLogFile();
-            System.out.println("Loaded the saved session from " + saveLocation);
+            System.out.println("Loaded the saved session from " + defaultSaveLocation);
         } catch (IOException e) {
             System.out.println("You do not have any session saved!");
         }

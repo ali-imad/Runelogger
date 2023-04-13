@@ -1,11 +1,13 @@
 package ui.gui.panels.menu;
 
-import model.Boss;
 import ui.gui.Button;
 import ui.gui.GUI;
 import ui.gui.MainWindowSwing;
 import ui.gui.buttons.ActivePanelSwapper;
-import ui.gui.panels.active.BossView;
+import ui.gui.buttons.AllEntriesSwapListener;
+import ui.gui.buttons.BossSelectSwapListener;
+import ui.gui.buttons.NewEntrySwapListener;
+import ui.gui.panels.active.PersistView;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -35,10 +37,11 @@ public class MenuView {
         ui.gui.Button entries = new ui.gui.Button("View All Entries", 20.0f, null, 260, 64);
         ui.gui.Button persistence = new ui.gui.Button("Save/Load Log", 20.0f, null, 260, 64);
 
-        addNew.setListener(new ActivePanelSwapper(MainWindowSwing.main,
-                MainWindowSwing.newEntryPanel));
-        boss.setListener(new ActivePanelSwapper(MainWindowSwing.main,
-                new BossView(new Boss("Vorkath")).getPanel()));
+        addNew.setListener(new NewEntrySwapListener(MainWindowSwing.main));
+        boss.setListener(new BossSelectSwapListener(MainWindowSwing.main, 0));
+        entries.setListener(new AllEntriesSwapListener(MainWindowSwing.main));
+        persistence.setListener(new ActivePanelSwapper(MainWindowSwing.main,
+                new PersistView().getPanel()));
 
         menuButtons.add(addNew);
         menuButtons.add(boss);

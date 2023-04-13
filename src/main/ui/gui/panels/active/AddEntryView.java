@@ -1,9 +1,11 @@
 package ui.gui.panels.active;
 
 import model.Boss;
+import ui.MainWindow;
 import ui.gui.Button;
-import ui.gui.GUI;
-import ui.gui.ImageCircle;
+import ui.gui.MainWindowSwing;
+import ui.gui.buttons.BossImageChangeListener;
+import ui.gui.buttons.MakeNewEntryListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -11,7 +13,7 @@ import java.awt.*;
 import java.util.ArrayList;
 
 import static ui.MainWindow.getLog;
-import static ui.gui.GUI.defaultBorder;
+import static ui.gui.GUI.menuColor;
 import static ui.gui.GUI.rsFont;
 
 public class AddEntryView extends ActiveView {
@@ -27,56 +29,61 @@ public class AddEntryView extends ActiveView {
     @Override
     public JPanel getPanel() {
         JPanel newEntryPanel = new JPanel(new BorderLayout());
+        initActiveViewPanel(newEntryPanel);
 
-        JPanel jTitle = new JPanel(new BorderLayout());
-        JLabel jTitleLabel = new JLabel(this.title);
-        jTitleLabel.setFont(GUI.rsFont.deriveFont(72.0f));
-        jTitle.add(jTitleLabel, BorderLayout.CENTER);
-        jTitle.setBorder(new EmptyBorder(90, 40, 90, 40));
-        jTitle.setBackground(bgColour);
+        JPanel titlePanel = getTitlePanel();
+        newEntryPanel.add(titlePanel, BorderLayout.NORTH);
 
-        newEntryPanel.add(jTitle, BorderLayout.NORTH);
+        JPanel fieldsPanel = getFieldsPanel();
+        newEntryPanel.add(fieldsPanel, BorderLayout.LINE_END);
 
-        JComponent bossPicture = new ImageCircle(150, "data/res/img/skulled.png").createCircleImage();
-        JPanel bossPicturePanel = new JPanel(new BorderLayout());
-        bossPicturePanel.add(bossPicture, BorderLayout.CENTER);
-        bossPicturePanel.setBorder(new EmptyBorder(90,50,90,50));
+        Boss curr = getBossFromFieldPanel(fieldsPanel);
+
+        JPanel bossPicturePanel = getBossPicturePanel(curr);
+        newEntryPanel.add(bossPicturePanel, BorderLayout.CENTER);
+
+        JPanel buttonPanel = getButtonPanel();
+        newEntryPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        return newEntryPanel;
+    }
+
+    public static JPanel getBossPicturePanel(Boss b) {
+        JPanel bossPicturePanel = getBossPicturePanel(b.getImagePath());
+        bossPicturePanel.setBorder(new EmptyBorder(90, 90, 90, 90));
         bossPicturePanel.setBackground(bgColour);
-        bossPicture.setBackground(bgColour);
+        return bossPicturePanel;
+    }
 
-        JPanel fieldsPanel = new JPanel(new GridLayout(3,1));
+    private Boss getBossFromFieldPanel(JPanel f) {
+        JPanel bossFieldPanel = (JPanel)f.getComponent(0);
+        JComboBox selected = (JComboBox)bossFieldPanel.getComponent(1);
+        return MainWindow.getLog().getBoss((String)selected.getSelectedItem());
+    }
+
+    private JPanel getFieldsPanel() {
+        JPanel fieldsPanel = new JPanel(new GridLayout(3, 1));
+        fieldsPanel.setBackground(bgColour);
         fieldsPanel.setPreferredSize(new Dimension(600, 200));
         fieldsPanel.setMinimumSize(new Dimension(600, 200));
         fieldsPanel.setMaximumSize(new Dimension(600, 200));
 
+        // add fields
         JPanel bossField = makeBossField();
         JPanel timeField = makeTimeField();
         JPanel valueField = makeValueField();
         fieldsPanel.add(bossField);
         fieldsPanel.add(timeField);
         fieldsPanel.add(valueField);
+        return fieldsPanel;
+    }
 
-        JPanel buttonPanel = new JPanel(new FlowLayout());
+    private static JPanel getButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 20));
         buttonPanel.setBackground(bgColour);
-        buttonPanel.add(addEntryButton.makeToggleButton(bgColour));
-
-        newEntryPanel.add(bossPicturePanel, BorderLayout.CENTER);
-        newEntryPanel.add(fieldsPanel, BorderLayout.LINE_END);
-        newEntryPanel.add(buttonPanel, BorderLayout.SOUTH);
-
-        newEntryPanel.setPreferredSize(new Dimension(this.panelW, this.panelH));
-        newEntryPanel.setMinimumSize(new Dimension(this.panelW, this.panelH));
-        newEntryPanel.setBorder(defaultBorder);
-        newEntryPanel.setBackground(bgColour);
-        return newEntryPanel;
-    }
-
-    private JPanel makeValueField() {
-        return new EntryFieldPanel("Value: ");
-    }
-
-    private JPanel makeTimeField() {
-        return new EntryFieldPanel("Time: ");
+        addEntryButton.setListener(new MakeNewEntryListener(MainWindowSwing.main));
+        buttonPanel.add(addEntryButton.makeToggleButton(menuColor));
+        return buttonPanel;
     }
 
     private JPanel makeBossField() {
@@ -91,8 +98,17 @@ public class AddEntryView extends ActiveView {
         }
 
         JComboBox bossBox = new JComboBox(bossNames.toArray());
+        bossBox.addItemListener(new BossImageChangeListener(MainWindowSwing.main));
         panel.add(label);
         panel.add(bossBox);
         return panel;
+    }
+
+    private JPanel makeTimeField() {
+        return new EntryFieldPanel("Time: ");
+    }
+
+    private JPanel makeValueField() {
+        return new EntryFieldPanel("Value: ");
     }
 }

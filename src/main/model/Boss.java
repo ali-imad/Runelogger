@@ -13,6 +13,16 @@ public class Boss {
     private int averageKillValue;  // average value of loot dropped by killing this boss
     private int averageTimeToKill;  //  average time to kill, in seconds
 
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
+    private String imagePath;  // path for the image of the boss
+
     // EFFECTS: Generate a Boss object to store KillEntry's and appopriate stats.
     //          Fields are initialized to 0 indicating no entries.
     public Boss(String name) {
@@ -20,6 +30,7 @@ public class Boss {
         this.averageTimeToKill = 0;
         this.averageKillValue = 0;
         this.kills = new ArrayList<>();
+        this.imagePath = "data/res/img/skulled.png";
     }
 
     @Override

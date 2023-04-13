@@ -1,19 +1,20 @@
 package ui.gui.buttons;
 
 import ui.gui.GUI;
+import ui.gui.panels.active.BossSelectView;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ActivePanelSwapper implements ActionListener {
+public class BossSelectSwapListener implements ActionListener {
     private final JFrame frame;
-    private final JPanel swap;
+    private final int page;
 
-    public ActivePanelSwapper(JFrame frame, JPanel swap) {
+    public BossSelectSwapListener(JFrame frame, int page) {
         this.frame = frame;
-        this.swap = swap;
+        this.page = page;
     }
 
     public void actionPerformed(ActionEvent e) {
@@ -31,7 +32,7 @@ public class ActivePanelSwapper implements ActionListener {
         toggleButton.setForeground(Color.YELLOW);
 
         frame.getContentPane().remove(root);
-        frame.getContentPane().add(swap, BorderLayout.LINE_END);
+        frame.getContentPane().add(new BossSelectView(page).getPanel(), BorderLayout.LINE_END);
         frame.revalidate();
         frame.repaint();
     }

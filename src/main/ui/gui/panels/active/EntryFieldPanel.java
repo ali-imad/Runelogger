@@ -9,6 +9,7 @@ import static ui.gui.GUI.rsFont;
 public class EntryFieldPanel extends JPanel {
     private JLabel label;
     private JTextField field;
+
     public EntryFieldPanel(String label) {
         this.setBackground(activeViewBgColour);
         this.label = new JLabel(label);

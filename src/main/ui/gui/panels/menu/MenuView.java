@@ -3,11 +3,10 @@ package ui.gui.panels.menu;
 import ui.gui.Button;
 import ui.gui.GUI;
 import ui.gui.MainWindowSwing;
-import ui.gui.buttons.ActivePanelSwapper;
 import ui.gui.buttons.AllEntriesSwapListener;
 import ui.gui.buttons.BossSelectSwapListener;
 import ui.gui.buttons.NewEntrySwapListener;
-import ui.gui.panels.active.PersistView;
+import ui.gui.buttons.PersistSwapListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -40,8 +39,7 @@ public class MenuView {
         addNew.setListener(new NewEntrySwapListener(MainWindowSwing.main));
         boss.setListener(new BossSelectSwapListener(MainWindowSwing.main, 0));
         entries.setListener(new AllEntriesSwapListener(MainWindowSwing.main));
-        persistence.setListener(new ActivePanelSwapper(MainWindowSwing.main,
-                new PersistView().getPanel()));
+        persistence.setListener(new PersistSwapListener(MainWindowSwing.main));
 
         menuButtons.add(addNew);
         menuButtons.add(boss);

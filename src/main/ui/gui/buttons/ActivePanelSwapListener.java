@@ -7,17 +7,14 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class ActivePanelSwapper implements ActionListener {
-    private final JFrame frame;
-    private final JPanel swap;
+public abstract class ActivePanelSwapListener implements ActionListener {
+    protected final JFrame frame;
 
-    public ActivePanelSwapper(JFrame frame, JPanel swap) {
+    public ActivePanelSwapListener(JFrame frame) {
         this.frame = frame;
-        this.swap = swap;
     }
 
-    public void actionPerformed(ActionEvent e) {
-//        new LoadListener().actionPerformed(e);
+    protected void toggleMenuButtonAndRemoveActiveView(ActionEvent e) {
         JButton toggleButton = (JButton) e.getSource();
         JPanel root = (JPanel) frame.getContentPane().getComponent(2);
         // set the rest to unselected
@@ -31,8 +28,5 @@ public class ActivePanelSwapper implements ActionListener {
         toggleButton.setForeground(Color.YELLOW);
 
         frame.getContentPane().remove(root);
-        frame.getContentPane().add(swap, BorderLayout.LINE_END);
-        frame.revalidate();
-        frame.repaint();
     }
 }

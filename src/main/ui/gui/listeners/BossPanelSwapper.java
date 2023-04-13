@@ -1,4 +1,4 @@
-package ui.gui.buttons;
+package ui.gui.listeners;
 
 import model.Boss;
 import ui.gui.panels.active.SingleBossView;

@@ -4,8 +4,8 @@ import model.Boss;
 import ui.MainWindow;
 import ui.gui.Button;
 import ui.gui.MainWindowSwing;
-import ui.gui.buttons.BossImageChangeListener;
-import ui.gui.buttons.MakeNewEntryListener;
+import ui.gui.listeners.BossImageChangeListener;
+import ui.gui.listeners.MakeNewEntryListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
@@ -24,6 +24,21 @@ public class AddEntryView extends ActiveView {
     public AddEntryView() {
         super("Add New Entry", new ArrayList<>());
         this.buttons.add(addEntryButton);
+    }
+
+    public static JPanel getBossPicturePanel(Boss b) {
+        JPanel bossPicturePanel = getBossPicturePanel(b.getImagePath());
+        bossPicturePanel.setBorder(new EmptyBorder(90, 90, 90, 90));
+        bossPicturePanel.setBackground(bgColour);
+        return bossPicturePanel;
+    }
+
+    private static JPanel getButtonPanel() {
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 20));
+        buttonPanel.setBackground(bgColour);
+        addEntryButton.setListener(new MakeNewEntryListener(MainWindowSwing.main));
+        buttonPanel.add(addEntryButton.makeToggleButton(menuColor));
+        return buttonPanel;
     }
 
     @Override
@@ -48,17 +63,10 @@ public class AddEntryView extends ActiveView {
         return newEntryPanel;
     }
 
-    public static JPanel getBossPicturePanel(Boss b) {
-        JPanel bossPicturePanel = getBossPicturePanel(b.getImagePath());
-        bossPicturePanel.setBorder(new EmptyBorder(90, 90, 90, 90));
-        bossPicturePanel.setBackground(bgColour);
-        return bossPicturePanel;
-    }
-
     private Boss getBossFromFieldPanel(JPanel f) {
-        JPanel bossFieldPanel = (JPanel)f.getComponent(0);
-        JComboBox selected = (JComboBox)bossFieldPanel.getComponent(1);
-        return MainWindow.getLog().getBoss((String)selected.getSelectedItem());
+        JPanel bossFieldPanel = (JPanel) f.getComponent(0);
+        JComboBox selected = (JComboBox) bossFieldPanel.getComponent(1);
+        return MainWindow.getLog().getBoss((String) selected.getSelectedItem());
     }
 
     private JPanel getFieldsPanel() {
@@ -76,14 +84,6 @@ public class AddEntryView extends ActiveView {
         fieldsPanel.add(timeField);
         fieldsPanel.add(valueField);
         return fieldsPanel;
-    }
-
-    private static JPanel getButtonPanel() {
-        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 80, 20));
-        buttonPanel.setBackground(bgColour);
-        addEntryButton.setListener(new MakeNewEntryListener(MainWindowSwing.main));
-        buttonPanel.add(addEntryButton.makeToggleButton(menuColor));
-        return buttonPanel;
     }
 
     private JPanel makeBossField() {

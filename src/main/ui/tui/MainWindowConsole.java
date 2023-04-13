@@ -192,7 +192,7 @@ public class MainWindowConsole extends MainWindow {
                 new MenuOptionConsole('l', "Load previously saved entries"),
                 new MenuOptionConsole('q', "Quit logger")
         };
-        
+
         char choice = parseAndDisplayOptions(startOptions);
 
         setNewStateFromMenu(choice);
@@ -234,7 +234,7 @@ public class MainWindowConsole extends MainWindow {
     // EFFECTS: Tries to serialize the log and save it to a JSON file at saveLocation
     private void saveLogToFile() {
         try {
-            this.saveLogToPath(defaultSaveLocation);
+            saveLogToPath(defaultSaveLocation);
             System.out.println("File was successfully saved to " + defaultSaveLocation);
         } catch (FileNotFoundException e) {
             System.out.println("File could not be saved to " + defaultSaveLocation);
@@ -275,7 +275,7 @@ public class MainWindowConsole extends MainWindow {
     // EFFECTS: Load a saved session into the logger
     private void loadSavedLogFile() {
         try {
-            this.loadLogFile();
+            loadLogFile();
             System.out.println("Loaded the saved session from " + defaultSaveLocation);
         } catch (IOException e) {
             System.out.println("You do not have any session saved!");

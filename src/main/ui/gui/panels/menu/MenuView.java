@@ -3,10 +3,10 @@ package ui.gui.panels.menu;
 import ui.gui.Button;
 import ui.gui.GUI;
 import ui.gui.MainWindowSwing;
-import ui.gui.buttons.AllEntriesSwapListener;
-import ui.gui.buttons.BossSelectSwapListener;
-import ui.gui.buttons.NewEntrySwapListener;
-import ui.gui.buttons.PersistSwapListener;
+import ui.gui.listeners.AllEntriesSwapListener;
+import ui.gui.listeners.BossSelectSwapListener;
+import ui.gui.listeners.NewEntrySwapListener;
+import ui.gui.listeners.PersistSwapListener;
 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;

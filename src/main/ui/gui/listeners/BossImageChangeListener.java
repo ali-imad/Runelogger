@@ -1,4 +1,4 @@
-package ui.gui.buttons;
+package ui.gui.listeners;
 
 import ui.MainWindow;
 
@@ -20,7 +20,7 @@ public class BossImageChangeListener implements ItemListener {
     public void itemStateChanged(ItemEvent e) {
         if (e.getStateChange() == ItemEvent.SELECTED) {
             JPanel root = (JPanel) frame.getContentPane().getComponent(2);
-            root.add(getBossPicturePanel(MainWindow.getLog().getBoss((String)e.getItem())), BorderLayout.CENTER);
+            root.add(getBossPicturePanel(MainWindow.getLog().getBoss((String) e.getItem())), BorderLayout.CENTER);
             frame.revalidate();
         }
     }

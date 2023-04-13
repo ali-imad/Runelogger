@@ -16,7 +16,7 @@ import java.util.stream.Stream;
 // Source code largely based on provided example in Phase 2 instructions
 // (https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git)
 public class JsonReader {
-    private String src;
+    private final String src;
 
     // EFFECTS: constructs reader to read from source file
     public JsonReader(String source) {

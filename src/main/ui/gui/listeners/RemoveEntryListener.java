@@ -1,4 +1,4 @@
-package ui.gui.buttons;
+package ui.gui.listeners;
 
 import ui.MainWindow;
 
@@ -7,7 +7,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class RemoveEntryListener implements ActionListener {
-    private JFrame frame;
+    private final JFrame frame;
 
     public RemoveEntryListener(JFrame frame) {
         this.frame = frame;

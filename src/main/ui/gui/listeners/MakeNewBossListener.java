@@ -1,4 +1,4 @@
-package ui.gui.buttons;
+package ui.gui.listeners;
 
 import ui.MainWindow;
 import ui.gui.MainWindowSwing;

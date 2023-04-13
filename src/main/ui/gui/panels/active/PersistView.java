@@ -1,9 +1,8 @@
 package ui.gui.panels.active;
 
 import ui.gui.Button;
-import ui.gui.buttons.LoadListener;
-import ui.gui.buttons.SaveListener;
-import ui.gui.panels.active.ActiveView;
+import ui.gui.listeners.LoadListener;
+import ui.gui.listeners.SaveListener;
 
 import javax.swing.*;
 import java.awt.*;

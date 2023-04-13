@@ -19,7 +19,6 @@ public class TestJsonReader extends TestJson {
             fail("IOException expected");
         } catch (IOException e) {
             // test passed
-            return;
         }
     }
 

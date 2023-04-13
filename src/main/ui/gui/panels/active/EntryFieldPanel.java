@@ -7,8 +7,8 @@ import static ui.gui.GUI.activeViewBgColour;
 import static ui.gui.GUI.rsFont;
 
 public class EntryFieldPanel extends JPanel {
-    private JLabel label;
-    private JTextField field;
+    private final JLabel label;
+    private final JTextField field;
 
     public EntryFieldPanel(String label) {
         this.setBackground(activeViewBgColour);

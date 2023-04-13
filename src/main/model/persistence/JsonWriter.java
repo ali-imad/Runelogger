@@ -13,8 +13,8 @@ import java.io.PrintWriter;
 // (https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git)
 public class JsonWriter {
     private static final int SPACES_IN_TAB = 2;
+    private final String dest;
     private PrintWriter writer;
-    private String dest;
 
     // EFFECTS: constructs writer to write the state of the logger
     public JsonWriter(String destination) {

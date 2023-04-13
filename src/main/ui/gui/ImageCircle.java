@@ -5,8 +5,8 @@ import java.awt.*;
 import java.awt.geom.Ellipse2D;
 
 public class ImageCircle {
-    private int diameter;
-    private Image image;
+    private final int diameter;
+    private final Image image;
 
     public ImageCircle(int diameter, String imagePath) {
         this.diameter = diameter;

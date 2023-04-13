@@ -5,9 +5,9 @@ import ui.gui.Button;
 import ui.gui.GUI;
 import ui.gui.ImageCircle;
 import ui.gui.MainWindowSwing;
-import ui.gui.buttons.BossPanelSwapper;
-import ui.gui.buttons.BossSelectSwapListener;
-import ui.gui.buttons.MakeNewBossListener;
+import ui.gui.listeners.BossPanelSwapper;
+import ui.gui.listeners.BossSelectSwapListener;
+import ui.gui.listeners.MakeNewBossListener;
 
 import javax.swing.*;
 import java.awt.*;

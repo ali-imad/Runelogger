@@ -2,7 +2,7 @@ package ui.gui.panels.active;
 
 import ui.gui.Button;
 import ui.gui.MainWindowSwing;
-import ui.gui.buttons.RemoveEntryListener;
+import ui.gui.listeners.RemoveEntryListener;
 
 import javax.swing.*;
 import java.awt.*;

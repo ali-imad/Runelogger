@@ -31,14 +31,6 @@ public class MainWindowSwing extends MainWindow {
         super(l);
     }
 
-    public static JPanel getNewEntryPanel() {
-        return newEntryPanel;
-    }
-
-    public static void setNewEntryPanel(JPanel newEntryPanel) {
-        MainWindowSwing.newEntryPanel = newEntryPanel;
-    }
-
     public static Font getFont(float size) {
         return font.deriveFont(size);
     }

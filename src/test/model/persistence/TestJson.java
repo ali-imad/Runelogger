@@ -5,8 +5,6 @@ import model.KillEntry;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-// Source code largely based on provided example in Phase 2 instructions
-// (https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git)
 public class TestJson {
     public static final Boss vorkath = new Boss("Vorkath");
     public static final Boss giantMole = new Boss("Giant Mole");

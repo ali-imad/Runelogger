@@ -9,8 +9,6 @@ import java.io.PrintWriter;
 
 // Represents a writer object that serializes the state of the boss kill logger
 
-// Source code largely based on provided example in Phase 2 instructions
-// (https://github.students.cs.ubc.ca/CPSC210/JsonSerializationDemo.git)
 public class JsonWriter {
     private static final int SPACES_IN_TAB = 2;
     private final String dest;
